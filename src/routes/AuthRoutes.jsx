@@ -6,6 +6,7 @@ import Signup from "../component/page/signup/signUp";
 import Dashboard from "../component/page/dashboard/Dashboard";
 import { UserContext } from "../Context/UserContext";
 import { GET_CASHE } from "../utils/helper";
+import Sidebar from "../component/common/sidebar/Sidebar";
 
 function AuthRoutes() {
     const { setUserLogin, UserLogin } = useContext(UserContext);
@@ -26,6 +27,7 @@ function AuthRoutes() {
 
                 {!UserLogin ? (
                     <>
+                    
                         <Route path="/" element={<Login />} />
                         <Route path="/signup" element={<Signup />} />
 
@@ -34,7 +36,6 @@ function AuthRoutes() {
                     <>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/" element={<Navigate to="/dashboard" />} />
-                        
                     </>
 
                 )}

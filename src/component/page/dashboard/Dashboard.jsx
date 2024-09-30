@@ -11,6 +11,7 @@ import Multiselect from "multiselect-react-dropdown";
 import { CARDDATA } from "../../../constant/constant";
 // import "/home/skill/asana-frontend/src/component/page/dashboard/test.css";
 import "../dashboard/test.css"
+import Sidebar from "../../common/sidebar/Sidebar";
 
 const TaskCard = ({ task, onClick }) => {
   return (
@@ -190,6 +191,7 @@ const Dashboard = () => {
 
   return (
     <React.Fragment>
+      <Sidebar/>
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar />
         <div className="container-fluid py-4">

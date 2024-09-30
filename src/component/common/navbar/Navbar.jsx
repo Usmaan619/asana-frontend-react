@@ -50,6 +50,7 @@ const Navbar = () => {
         handleCloseModal();
       }
       console.log("response: ", response.data);
+      handleCloseModal(false)
     } catch (error) {
       console.log("error: ", error);
     }
