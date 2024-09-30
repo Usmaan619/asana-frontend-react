@@ -5,7 +5,7 @@ import { HiHome } from "react-icons/hi";
 const Sidebar = () => {
   const navItems = [
     {
-      href: "../pages/dashboard.html",
+      href: "/dashboard",
       iconViewBox: "0 0 45 40",
       title: "shop",
       // paths: [
@@ -40,7 +40,7 @@ const Sidebar = () => {
       isActive: false,
     },
     {
-      href: "../pages/billing.html",
+      href: "/update",
       iconViewBox: "0 0 43 36",
       title: "credit-card",
       paths: [
@@ -53,7 +53,7 @@ const Sidebar = () => {
           d: "M0,16.125 L0,32.25 C0,34.2297917 1.60354167 ...", // truncated
         },
       ],
-      label: "Billing",
+      label: "Update",
       isActive: false,
     },
     {
