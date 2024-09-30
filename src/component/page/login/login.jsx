@@ -26,7 +26,7 @@ const Login = () => {
 
       if (response?.login) {
         SET_CASHE("token", response?.token);
-        navigate("/dashboard");
+        // navigate("/dashboard");
       }
       console.log("Login successful:", response);
     } catch (error) {

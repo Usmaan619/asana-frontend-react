@@ -10,9 +10,13 @@ import Signup from "./component/page/signup/signUp";
 import Login from "./component/page/login/login";
 import { PrivateRoute } from "./authContext/PrivateRoute";
 import Sidebar from "./component/common/sidebar/Sidebar";
+import { get } from "react-hook-form";
+import { GET_CASHE } from "./utils/helper";
 
 function Layout() {
-  const showSidebar = !["/", "/signup"].includes(window?.location?.pathname);
+  const showSidebar =
+    !["/", "/signup"].includes(window?.location?.pathname) &&
+    GET_CASHE("token");
   return (
     <>
       {showSidebar && <Sidebar />}
