@@ -1,0 +1,33 @@
+/* Asana Board Layout */
+.asana-board {
+  padding: 20px;
+}
+
+.task-column {
+  min-height: 500px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.task-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.task-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.badge {
+  font-size: 0.75rem;
+}
+
+.text-uppercase {
+  font-size: 0.9rem;
+}

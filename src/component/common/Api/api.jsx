@@ -42,7 +42,7 @@ export const updateTaskAPI = async (id, payload) => {
       payload
     );
 
-    return response?.data?.users;
+    return response?.data;
   } catch (error) {
     console.log("error: ", error);
   }
@@ -54,6 +54,7 @@ export const createTaskAPI = async (payload) => {
       `${environment?.apiUrl}task/create`,
       payload
     );
+    console.log('response: ', response);
 
     return response?.data;
   } catch (error) {

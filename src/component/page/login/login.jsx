@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginAPI } from "../../common/Api/api";
 import { SET_CASHE } from "../../../utils/helper";
 
 const Login = () => {
-  const [name, setName] = useState(""); // Default name
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -14,7 +16,6 @@ const Login = () => {
     try {
       event.preventDefault();
 
-      // Prepare the payload
       const payload = {
         email,
         password,
@@ -25,12 +26,10 @@ const Login = () => {
 
       if (response?.login) {
         SET_CASHE("token", response?.token);
+        navigate("/dashboard");
       }
-      // If the response is successful, log the data
       console.log("Login successful:", response);
-      // Handle successful login (e.g., redirect or store token)
     } catch (error) {
-      // Handle errors
       setError(
         error.response ? error.response.data : "Login failed. Please try again."
       );

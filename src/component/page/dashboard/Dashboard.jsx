@@ -9,52 +9,144 @@ import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import { CARDDATA } from "../../../constant/constant";
+import "/home/skill/asana-frontend/src/component/page/dashboard/test.css";
+
+const TaskCard = ({ task, onClick }) => {
+  return (
+    <div className="my-2" onClick={onClick}>
+      <div className="card task-card">
+        <div className="card-body">
+          <span className="card-text ">Task No.{task?.ticketNo}</span>
+
+          <div className="d-flex">
+            <h6 className="card-title">{task.title}</h6>
+          </div>
+          <div className="d-flex justify-content-between align-items-center">
+            <p className="card-text text-primary m-0">{task.priority}</p>
+            <p className="card-text text-warning m-0">{task.status}</p>
+          </div>
+          <div className="d-flex justify-content-between align-items-center mt-2">
+            <span className="h5 text-danger">{task.assignedTo?.name}</span>
+            <span className="h6 text-primary">
+              {new Date(task.dueDate).toLocaleDateString("en-IN")}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AsanaStyleBoard = ({ tasks, handleModal }) => {
+  const getStatusTasks = (status) =>
+    tasks.filter((task) => task.status === status);
+
+  return (
+    <div className="asana-board container">
+      <div className="row">
+        {/* Open Tickets */}
+        <div className="col-lg-3">
+          <h5 className="text-uppercase text-secondary">Open</h5>
+          <div className="task-column">
+            {getStatusTasks("open").map((task, index) => {
+              return (
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  onClick={() => handleModal(task)}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* In-Progress Tickets */}
+        <div className="col-lg-3">
+          <h5 className="text-uppercase text-secondary">In-Progress</h5>
+          <div className="task-column">
+            {getStatusTasks("in-progress").map((task, index) => {
+              return (
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  onClick={() => handleModal(task)}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Completed Tickets */}
+        <div className="col-lg-3">
+          <h5 className="text-uppercase text-secondary">Completed</h5>
+          <div className="task-column">
+            {getStatusTasks("completed").map((task, index) => {
+              return (
+                <TaskCard
+                  key={task._id}
+                  task={task}
+                  onClick={() => handleModal(task)}
+                />
+              );
+            })}
+          </div>
+        </div>
+        {/* Done Tickets */}
+        <div className="col-lg-3">
+          <h5 className="text-uppercase text-secondary">Done</h5>
+          <div className="task-column">
+            {getStatusTasks("done").map((task, index) => (
+              <TaskCard
+                key={task._id}
+                task={task}
+                onClick={() => handleModal(task)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = () => {
-  const {
-    register,
-    handleSubmit,
-    setValue, // To set form field values
-  } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
 
   const [TaskData, setTaskData] = useState([]);
+
   const [ticket, setticket] = useState([]);
   const [show, setShow] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null); // To store the selected task data
+  const [currentTask, setCurrentTask] = useState(null);
+  const [comments, setComments] = useState();
+  const [collaboratorSelect, setCollaboratorSelect] = useState([]);
 
-  const handleOpenModal = () => {
-    setShow(true);
-  };
-  const handleCloseModal = () => {
-    setShow(false);
-  };
+  const handleOpenModal = () => setShow(true);
+
+  const handleCloseModal = () => setShow(false);
 
   useEffect(() => {
     fetchTicket();
   }, []);
 
   const fetchTicket = async () => {
-    let data = await featctAllTicket();
-    let user = await fetchTicketData();
+    const data = await featctAllTicket();
+    const user = await fetchTicketData();
     setTaskData(user);
     setticket(data);
   };
 
   // Handle modal and set the form values
   const handleModal = (index) => {
-    const task = ticket[index]; // Get the selected task
-    setCurrentTask(task); // Store the current task data
-    setTaskValues(task); // Call function to set values in the form
+    setCurrentTask(index);
+    setTaskValues(index);
     handleOpenModal();
   };
 
-  // Function to set form values using setValue
-  const [comments, setCommets] = useState();
+  // Set form values using setValue
   const setTaskValues = (task) => {
-    console.log("task: ", task);
-    if (task?.comments) setCommets(task?.comments);
+    if (task?.comments) setComments(task?.comments);
     setValue("title", task?.title || "");
-    setValue("assignedTo", task?.assignedTo?._id || ""); // Set the assignedTo using _id
+    setValue("assignedTo", task?.assignedTo?._id || "");
     setValue("priority", task?.priority || "medium");
     setValue("status", task?.status || "open");
     setValue(
@@ -67,11 +159,9 @@ const Dashboard = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log("data: ", currentTask);
       const payload = {
-        createdBy: "66f507dcee8e0ca206195e9d",
         title: data?.title,
-        assignedTo: data?.assignedTo, // This will be the _id of the selected option
+        assignedTo: data?.assignedTo,
         priority: data?.priority,
         status: data?.status,
         dueDate: data?.dueDate,
@@ -79,18 +169,14 @@ const Dashboard = () => {
         comments: data?.comment,
         collaborators: data?.collaborator,
       };
-      console.log("payload: ", payload);
 
       const response = await updateTaskAPI(currentTask?._id, payload);
-      console.log("response: ", response);
-    } catch (error) {
-      console.log("error: ", error);
-    }
+
+      if (response?.success) fetchTicket();
+    } catch (error) {}
   };
 
-  // Multi-select states and event handlers
-  const [collaboratorSelect, setCollaboratorSelect] = useState([]);
-
+  // Multi-select event handlers
   const onCollaboratorSelect = (selectedList) => {
     setCollaboratorSelect(selectedList);
     setValue("collaborator", selectedList);
@@ -143,36 +229,12 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
+
+          {/* Task Board */}
           <div className="row my-5">
-            {ticket?.map((item, index) => (
-              <div
-                key={index}
-                className="col-lg-3 my-2"
-                onClick={() => handleModal(index)}
-              >
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title">{item?.title}</h5>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <p className="card-text text-primary m-0">
-                        {item?.priority}
-                      </p>
-                      <p className="card-text text-warning m-0">
-                        {item?.status}
-                      </p>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span className="h5 text-danger">
-                        {item?.assignedTo?.name}
-                      </span>
-                      <span className="h6 text-primary">
-                        {new Date(item?.dueDate).toLocaleDateString("en-IN")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <AsanaStyleBoard tasks={ticket} handleModal={handleModal} />
+
+            {/* Task Modal */}
             <Modal
               size="lg"
               show={show}
@@ -206,13 +268,13 @@ const Dashboard = () => {
                     >
                       {TaskData?.map((option, index) => (
                         <option key={index} value={option._id}>
-                          {option.name} {/* Display name */}
+                          {option.name}
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  {/* Priority MultiSelect */}
+                  {/* Priority Dropdown */}
                   <div className="form-group">
                     <label htmlFor="priority">Priority</label>
                     <select
@@ -242,18 +304,18 @@ const Dashboard = () => {
                     </select>
                   </div>
 
-                  {/* Date Picker */}
+                  {/* Due Date */}
                   <div className="form-group">
-                    <label htmlFor="date">Date</label>
+                    <label htmlFor="dueDate">Due Date</label>
                     <input
-                      className="form-control"
                       type="date"
-                      id="date"
+                      className="form-control"
+                      id="dueDate"
                       {...register("dueDate")}
                     />
                   </div>
 
-                  {/* Description Textarea */}
+                  {/* Description */}
                   <div className="form-group">
                     <label htmlFor="description">Description</label>
                     <textarea
@@ -261,58 +323,52 @@ const Dashboard = () => {
                       id="description"
                       rows="4"
                       {...register("description")}
-                    />
-                  </div>
-                  {/* Comments Section - separate from the modal */}
-                  <div className="comments-section">
-                    <h6>Comments</h6>
-                    {comments && comments.length > 0 ? (
-                      <ul className="list-group">
-                        {comments.map((comment) => (
-                          <li key={comment._id} className="list-group-item">
-                            <strong>{comment.createdBy.name}</strong>:{" "}
-                            {comment.text}
-                            <span className="text-muted">
-                              {" "}
-                              - {new Date(comment.createdAt).toLocaleString()}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>No comments yet</p>
-                    )}
+                    ></textarea>
                   </div>
 
-                  {/* Comment Textarea */}
+                  {/* Collaborators */}
                   <div className="form-group">
-                    <label htmlFor="comment">Comment</label>
-                    <textarea
+                    <label>Collaborator</label>
+                    <Multiselect
+                      options={TaskData}
+                      selectedValues={collaboratorSelect}
+                      displayValue="name"
+                      onSelect={onCollaboratorSelect}
+                      onRemove={onCollaboratorRemove}
+                    />
+                  </div>
+
+                  {/* Comments */}
+                  {comments?.map((comment, index) => (
+                    <div key={index}>
+                      <h6>
+                        {comment.createdBy?.name} at{" "}
+                        {new Date(comment.createdAt).toLocaleDateString(
+                          "en-IN"
+                        )}
+                      </h6>
+                      <p>{comment.text}</p>
+                    </div>
+                  ))}
+
+                  <div className="form-group">
+                    <label htmlFor="comment">Add Comment</label>
+                    <input
+                      type="text"
                       className="form-control"
                       id="comment"
-                      rows="3"
+                      placeholder="Add comment"
                       {...register("comment")}
                     />
                   </div>
 
-                  {/* Collaborator MultiSelect */}
-                  <div className="form-group">
-                    <label htmlFor="collaborator">Collaborator</label>
-                    <Multiselect
-                      placeholder="Collaborator"
-                      options={TaskData}
-                      selectedValues={collaboratorSelect}
-                      onSelect={onCollaboratorSelect}
-                      onRemove={onCollaboratorRemove}
-                      displayValue="name"
-                    />
-                  </div>
-
-                  <div className="text-center">
-                    <button className="btn btn-primary" type="submit">
-                      Submit
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary mt-3"
+                    onClick={handleCloseModal}
+                  >
+                    Submit
+                  </button>
                 </form>
               </Modal.Body>
             </Modal>

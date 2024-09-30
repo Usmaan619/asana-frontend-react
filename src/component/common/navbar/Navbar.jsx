@@ -36,7 +36,6 @@ const Navbar = () => {
     try {
       console.log("data: ", data);
       let payload = {
-        createdBy: "66f507dcee8e0ca206195e9d",
         title: data?.title,
         assignedTo: data?.assignedTo,
         priority: data?.priority,
@@ -46,6 +45,10 @@ const Navbar = () => {
         collaborators: data?.collaborator,
       };
       const response = await createTaskAPI(payload);
+      if (response?.success) {
+        featchTicketData();
+        handleCloseModal();
+      }
       console.log("response: ", response.data);
     } catch (error) {
       console.log("error: ", error);
