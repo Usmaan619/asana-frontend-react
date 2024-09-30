@@ -8,6 +8,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState();
+  const [setUserLogin, UserLogin] = useState();
 
   const handlelogin = (token) => {
     // Implement your login logic here
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, handlelogin, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, handlelogin, logout ,setUserLogin, UserLogin}}>
       {children}
     </AuthContext.Provider>
   );

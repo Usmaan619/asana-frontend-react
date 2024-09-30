@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginAPI } from "../../common/Api/api";
 import { SET_CASHE } from "../../../utils/helper";
+import { UserContext } from "../../../Context/UserContext";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
+  const { setUserLogin } = useContext(UserContext);
 
   const handleSubmit = async (event) => {
     try {
@@ -26,7 +28,8 @@ const Login = () => {
 
       if (response?.login) {
         SET_CASHE("token", response?.token);
-        // navigate("/dashboard");
+        setUserLogin(response?.token)
+        navigate("/dashboard");
       }
       console.log("Login successful:", response);
     } catch (error) {

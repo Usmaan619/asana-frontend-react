@@ -9,7 +9,8 @@ import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import { CARDDATA } from "../../../constant/constant";
-import "/home/skill/asana-frontend/src/component/page/dashboard/test.css";
+// import "/home/skill/asana-frontend/src/component/page/dashboard/test.css";
+import "../dashboard/test.css"
 
 const TaskCard = ({ task, onClick }) => {
   return (
