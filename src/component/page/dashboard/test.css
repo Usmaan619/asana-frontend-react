@@ -3,6 +3,12 @@
   padding: 20px;
 }
 
+
+.task-column-overflow {
+ height: 400px;
+}
+
+
 .task-column {
   min-height: 500px;
   background-color: #f8f9fa;

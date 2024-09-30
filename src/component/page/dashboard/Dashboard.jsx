@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import { CARDDATA } from "../../../constant/constant";
 // import "/home/skill/asana-frontend/src/component/page/dashboard/test.css";
-import "../dashboard/test.css"
+import "../dashboard/test.css";
 import Sidebar from "../../common/sidebar/Sidebar";
 
 const TaskCard = ({ task, onClick }) => {
@@ -49,7 +49,7 @@ const AsanaStyleBoard = ({ tasks, handleModal }) => {
         {/* Open Tickets */}
         <div className="col-lg-3">
           <h5 className="text-uppercase text-secondary">Open</h5>
-          <div className="task-column">
+          <div className="task-column task-column-overflow overflow-auto">
             {getStatusTasks("open").map((task, index) => {
               return (
                 <TaskCard
@@ -65,7 +65,7 @@ const AsanaStyleBoard = ({ tasks, handleModal }) => {
         {/* In-Progress Tickets */}
         <div className="col-lg-3">
           <h5 className="text-uppercase text-secondary">In-Progress</h5>
-          <div className="task-column">
+          <div className="task-column task-column-overflow overflow-auto">
             {getStatusTasks("in-progress").map((task, index) => {
               return (
                 <TaskCard
@@ -81,7 +81,7 @@ const AsanaStyleBoard = ({ tasks, handleModal }) => {
         {/* Completed Tickets */}
         <div className="col-lg-3">
           <h5 className="text-uppercase text-secondary">Completed</h5>
-          <div className="task-column">
+          <div className="task-column task-column-overflow overflow-auto">
             {getStatusTasks("completed").map((task, index) => {
               return (
                 <TaskCard
@@ -96,7 +96,7 @@ const AsanaStyleBoard = ({ tasks, handleModal }) => {
         {/* Done Tickets */}
         <div className="col-lg-3">
           <h5 className="text-uppercase text-secondary">Done</h5>
-          <div className="task-column">
+          <div className="task-column task-column-overflow overflow-auto">
             {getStatusTasks("done").map((task, index) => (
               <TaskCard
                 key={task._id}
@@ -151,6 +151,7 @@ const Dashboard = () => {
     setValue("assignedTo", task?.assignedTo?._id || "");
     setValue("priority", task?.priority || "medium");
     setValue("status", task?.status || "open");
+    setValue("comment", task?.comment || "");
     setValue(
       "dueDate",
       task?.dueDate ? new Date(task?.dueDate).toISOString().split("T")[0] : ""
@@ -191,7 +192,7 @@ const Dashboard = () => {
 
   return (
     <React.Fragment>
-      <Sidebar/>
+      <Sidebar />
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar />
         <div className="container-fluid py-4">

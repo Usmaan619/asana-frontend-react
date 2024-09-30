@@ -3,10 +3,10 @@ import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import axios from "axios";
-import { createTaskAPI, featchAllUser } from "../Api/api";
+import { createTaskAPI, featchAllUser, featctAllTicket } from "../Api/api";
 
 const Navbar = () => {
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, reset } = useForm();
 
   useEffect(() => {
     featchTicketData();
@@ -22,6 +22,7 @@ const Navbar = () => {
       console.log("error: ", error);
     }
   };
+  const getTask = async () => await featctAllTicket();
 
   const [show, setShow] = useState(false);
 
@@ -46,11 +47,14 @@ const Navbar = () => {
       };
       const response = await createTaskAPI(payload);
       if (response?.success) {
-        featchTicketData();
+        await featchTicketData();
+        await getTask();
         handleCloseModal();
       }
-      console.log("response: ", response.data);
-      handleCloseModal(false)
+      console.log("response: ", response);
+      handleCloseModal(false);
+      setCollaboratorSelect([]);
+      reset();
     } catch (error) {
       console.log("error: ", error);
     }
