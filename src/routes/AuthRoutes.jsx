@@ -7,6 +7,7 @@ import Dashboard from "../component/page/dashboard/Dashboard";
 import { UserContext } from "../Context/UserContext";
 import { GET_CASHE } from "../utils/helper";
 import Sidebar from "../component/common/sidebar/Sidebar";
+import Update from "../component/page/update";
 
 function AuthRoutes() {
     const { setUserLogin, UserLogin } = useContext(UserContext);
@@ -36,6 +37,7 @@ function AuthRoutes() {
                     <>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/" element={<Navigate to="/dashboard" />} />
+                        <Route path="/update" element={<Update />}/>
                     </>
 
                 )}
