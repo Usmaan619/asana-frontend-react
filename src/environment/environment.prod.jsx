@@ -1,3 +1,3 @@
 export const environmentProd = {
-  apiUrl: "",
+  apiUrl: "https://asana-backend-pvsu.onrender.com/api/",
 };
