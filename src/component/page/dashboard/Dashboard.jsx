@@ -366,11 +366,7 @@ const Dashboard = () => {
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    className="btn btn-primary mt-3"
-                    onClick={handleCloseModal}
-                  >
+                  <button type="submit" className="btn btn-primary mt-3">
                     Submit
                   </button>
                 </form>
@@ -379,6 +375,10 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+
+              
+              
+
     </React.Fragment>
   );
 };

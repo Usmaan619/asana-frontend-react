@@ -54,7 +54,7 @@ export const createTaskAPI = async (payload) => {
       `${environment?.apiUrl}task/create`,
       payload
     );
-    console.log('response: ', response);
+    console.log("response: ", response);
 
     return response?.data;
   } catch (error) {
@@ -78,6 +78,31 @@ export const signUpAPI = async (payload) => {
       payload
     );
     return response?.data;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+export const createTaskDailyUpdateAPI = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `${environment?.apiUrl}task/createTaskDailyUpdate`,
+      payload
+    );
+    console.log("response:createTaskDailyUpdateAPI ", response);
+
+    return response?.data;
+  } catch (error) {
+    console.log("error: ", error);
+  }
+};
+
+export const getAllDailyTaskUpdate = async () => {
+  try {
+    const response = await axiosInstance.get(
+      `${environment?.apiUrl}task/getAllDailyTaskUpdate`
+    );
+    return response?.data?.tasks;
   } catch (error) {
     console.log("error: ", error);
   }

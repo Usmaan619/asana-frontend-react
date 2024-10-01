@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
-import axios from "axios";
 import { createTaskAPI, featchAllUser, featctAllTicket } from "../Api/api";
+import { useDispatch } from "react-redux";
 
 const Navbar = () => {
   const { register, handleSubmit, setValue, reset } = useForm();
@@ -26,17 +26,14 @@ const Navbar = () => {
 
   const [show, setShow] = useState(false);
 
-  const handleOpenModal = () => {
-    setShow(true);
-  };
-  const handleCloseModal = () => {
-    setShow(false);
-  };
+  const handleOpenModal = () => setShow(true);
+
+  const handleCloseModal = () => setShow(false);
 
   const onSubmit = async (data) => {
     try {
       console.log("data: ", data);
-      let payload = {
+      const payload = {
         title: data?.title,
         assignedTo: data?.assignedTo,
         priority: data?.priority,
@@ -49,12 +46,14 @@ const Navbar = () => {
       if (response?.success) {
         await featchTicketData();
         await getTask();
+
         handleCloseModal();
+        handleCloseModal(false);
+        setCollaboratorSelect([]);
+
+        reset();
       }
       console.log("response: ", response);
-      handleCloseModal(false);
-      setCollaboratorSelect([]);
-      reset();
     } catch (error) {
       console.log("error: ", error);
     }
@@ -132,6 +131,27 @@ const Navbar = () => {
     setValue("collaborator", selectedList);
   };
 
+  const [breadcrumb, setBreadcrumb] = useState("");
+  useEffect(() => {
+    getRoutes();
+  }, [breadcrumb]);
+
+  const getRoutes = () => {
+    switch (window?.location?.pathname) {
+      case "/dashboard":
+        setBreadcrumb("Dashboard");
+        break;
+
+      case "/update":
+        setBreadcrumb("Task Reports");
+
+        break;
+
+      default:
+        break;
+    }
+  };
+
   return (
     <React.Fragment>
       {/* <!-- Navbar --> */}
@@ -142,20 +162,7 @@ const Navbar = () => {
       >
         <div className="container-fluid py-1 px-3">
           <nav aria-label="breadcrumb">
-            <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-              <li className="breadcrumb-item text-sm">
-                <a className="opacity-5 text-dark" href="#/">
-                  Pages
-                </a>
-              </li>
-              <li
-                className="breadcrumb-item text-sm text-dark active"
-                aria-current="page"
-              >
-                Dashboard
-              </li>
-            </ol>
-            <h6 className="font-weight-bolder mb-0">Dashboard</h6>
+            <h6 className="font-weight-bolder mb-0">{breadcrumb}</h6>
           </nav>
           <div
             className="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4"
@@ -175,7 +182,7 @@ const Navbar = () => {
                   show={show}
                   onHide={() => handleCloseModal(false)}
                   aria-labelledby="example-modal-sizes-title-sm"
-              >
+                >
                   <Modal.Header closeButton>
                     <Modal.Title id="example-modal-sizes-title-sm">
                       ADD TASK
