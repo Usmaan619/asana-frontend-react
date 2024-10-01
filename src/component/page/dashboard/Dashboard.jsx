@@ -12,6 +12,7 @@ import { CARDDATA } from "../../../constant/constant";
 // import "/home/skill/asana-frontend/src/component/page/dashboard/test.css";
 import "../dashboard/test.css";
 import Sidebar from "../../common/sidebar/Sidebar";
+import { toastSuccess } from "../../../servers/toastr.service";
 
 const TaskCard = ({ task, onClick }) => {
   return (
@@ -175,7 +176,11 @@ const Dashboard = () => {
 
       const response = await updateTaskAPI(currentTask?._id, payload);
 
-      if (response?.success) fetchTicket();
+      if (response?.success) {
+        console.log('response.data: ', response.data);
+        toastSuccess()
+        fetchTicket();
+      }
     } catch (error) {}
   };
 
@@ -194,7 +199,7 @@ const Dashboard = () => {
     <React.Fragment>
       <Sidebar />
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <Navbar />
+        <Navbar fetchTicket={fetchTicket} />
         <div className="container-fluid py-4">
           <div className="row">
             {CARDDATA.map((card, index) => (
@@ -375,10 +380,6 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
-
-              
-              
-
     </React.Fragment>
   );
 };

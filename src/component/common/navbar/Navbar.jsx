@@ -3,9 +3,9 @@ import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import { createTaskAPI, featchAllUser, featctAllTicket } from "../Api/api";
-import { useDispatch } from "react-redux";
+import { toastSuccess } from "../../../servers/toastr.service";
 
-const Navbar = () => {
+const Navbar = ({ fetchTicket }) => {
   const { register, handleSubmit, setValue, reset } = useForm();
 
   useEffect(() => {
@@ -18,9 +18,7 @@ const Navbar = () => {
     try {
       const res = await featchAllUser();
       if (res) setTaskData(res);
-    } catch (error) {
-      console.log("error: ", error);
-    }
+    } catch (error) {}
   };
   const getTask = async () => await featctAllTicket();
 
@@ -32,7 +30,6 @@ const Navbar = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log("data: ", data);
       const payload = {
         title: data?.title,
         assignedTo: data?.assignedTo,
@@ -44,19 +41,17 @@ const Navbar = () => {
       };
       const response = await createTaskAPI(payload);
       if (response?.success) {
-        await featchTicketData();
+        toastSuccess(response?.message)
+        // await featchTicketData();
         await getTask();
+        await fetchTicket();
 
         handleCloseModal();
-        handleCloseModal(false);
         setCollaboratorSelect([]);
 
         reset();
       }
-      console.log("response: ", response);
-    } catch (error) {
-      console.log("error: ", error);
-    }
+    } catch (error) {}
   };
 
   const notifications = [

@@ -12,20 +12,20 @@ const Sidebar = () => {
       isActive: window?.location?.pathname === "/dashboard" ? true : false,
     },
     {
-      path: "/tables",
-      icon: <HiHome />, // replace with actual icon
+      // path: "/tables",
+      icon: <HiHome />,
       label: "Board",
       isActive: false,
     },
     {
       path: "/update",
-      icon: <HiHome />, // replace with actual icon
+      icon: <HiHome />,
       label: "Update",
       isActive: window?.location?.pathname === "/update" ? true : false,
     },
     {
-      path: "/virtual-reality",
-      icon: <HiHome />, // replace with actual icon
+      // path: "/virtual-reality",
+      icon: <HiHome />,
       label: "Virtual Reality",
       isActive: false,
     },

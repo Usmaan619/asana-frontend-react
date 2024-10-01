@@ -36,7 +36,6 @@ const Update = () => {
 
   const dailyUpdate = async () => {
     const task = await getAllDailyTaskUpdate();
-    console.log(dailyUpdate);
 
     setDailyTask(task);
   };
@@ -49,9 +48,6 @@ const Update = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log("collaboratorSelect: ", collaboratorSelect);
-      console.log("data: ", data);
-
       const payload = {
         ticketNo: data?.taskNumber,
         about: data?.textarea,
@@ -65,7 +61,6 @@ const Update = () => {
         dailyUpdate();
         handleClose();
       }
-      console.log("res:---------createTaskDailyUpdateAPI ", res);
     } catch (error) {}
   };
 
