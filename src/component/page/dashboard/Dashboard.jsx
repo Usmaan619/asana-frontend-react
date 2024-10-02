@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../../common/navbar/Navbar";
+import { toast } from "react-toastify";
 import {
   featctAllTicket,
   fetchTicketData,
@@ -112,7 +113,7 @@ const AsanaStyleBoard = ({ tasks, handleModal }) => {
   );
 };
 
-const Dashboard = () => {
+const Dashboard = (task) => {
   const { register, handleSubmit, setValue } = useForm();
 
   const [TaskData, setTaskData] = useState([]);
@@ -121,6 +122,7 @@ const Dashboard = () => {
   const [show, setShow] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [comments, setComments] = useState();
+  const [taskTicketNo, settaskTicketNo] = useState();
   const [collaboratorSelect, setCollaboratorSelect] = useState([]);
 
   const handleOpenModal = () => setShow(true);
@@ -140,6 +142,7 @@ const Dashboard = () => {
 
   // Handle modal and set the form values
   const handleModal = (index) => {
+    // console.log('index: ', index);
     setCurrentTask(index);
     setTaskValues(index);
     handleOpenModal();
@@ -148,6 +151,7 @@ const Dashboard = () => {
   // Set form values using setValue
   const setTaskValues = (task) => {
     if (task?.comments) setComments(task?.comments);
+    settaskTicketNo(task?.ticketNo);
     setValue("title", task?.title || "");
     setValue("assignedTo", task?.assignedTo?._id || "");
     setValue("priority", task?.priority || "medium");
@@ -177,7 +181,6 @@ const Dashboard = () => {
       const response = await updateTaskAPI(currentTask?._id, payload);
 
       if (response?.success) {
-        
         toastSuccess();
         fetchTicket();
         handleCloseModal();
@@ -194,6 +197,21 @@ const Dashboard = () => {
   const onCollaboratorRemove = (selectedList) => {
     setCollaboratorSelect(selectedList);
     setValue("collaborator", selectedList);
+  };
+
+  const divRef = useRef(null); // Reference to the div you want to copy
+
+  const copyDivToClipboard = () => {
+
+    if (divRef.current) {
+      const range = document.createRange();
+      range.selectNode(divRef.current);
+      window.getSelection().removeAllRanges(); // Clear current selection
+      window.getSelection().addRange(range); // Select the text
+      document.execCommand("copy"); // Copy the selected text to clipboard
+      window.getSelection().removeAllRanges(); // Deselect
+      toast.success("Copied!"); // Display a success message
+    }
   };
 
   return (
@@ -251,10 +269,14 @@ const Dashboard = () => {
               onHide={handleCloseModal}
               aria-labelledby="example-modal-sizes-title-sm"
             >
-              <Modal.Header closeButton>
+              <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-sm">
                   {currentTask ? "Edit Task" : "Add Task"}
                 </Modal.Title>
+                <div className="ms-auto d-flex align-items-center">
+                  <div ref={divRef} className="mx-2 my-0 h6">{taskTicketNo}</div>
+                  <button onClick={copyDivToClipboard} className="rounded-pill">Copy</button>
+                </div>
               </Modal.Header>
               <Modal.Body>
                 <form onSubmit={handleSubmit(onSubmit)}>
