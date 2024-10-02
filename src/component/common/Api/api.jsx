@@ -74,7 +74,7 @@ export const loginAPI = async (payload) => {
 export const signUpAPI = async (payload) => {
   try {
     const response = await axios.post(
-      `${environment?.apiUrl}user/signUp}`,
+      `${environment?.apiUrl}user/signUp`,
       payload
     );
     return response?.data;

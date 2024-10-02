@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { signUpAPI } from "../../common/Api/api";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
   const {
     register,
@@ -17,6 +19,9 @@ const Signup = () => {
     try {
       const response = await signUpAPI(data);
       console.log("response:signUpAPI ", response);
+      if(response.success){
+        navigate("/");
+      }
       if (response.status === 200)
         setSuccessMessage("Signup successful! You can now log in.");
     } catch (error) {

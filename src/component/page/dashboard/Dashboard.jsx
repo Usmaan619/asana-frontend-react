@@ -273,9 +273,9 @@ const Dashboard = (task) => {
                 <Modal.Title id="example-modal-sizes-title-sm">
                   {currentTask ? "Edit Task" : "Add Task"}
                 </Modal.Title>
-                <div className="ms-auto d-flex align-items-center">
+                <div className="ms-auto d-flex align-items-center border border-black rounded-pill">
                   <div ref={divRef} className="mx-2 my-0 h6">{taskTicketNo}</div>
-                  <button onClick={copyDivToClipboard} className="rounded-pill">Copy</button>
+                  <button onClick={copyDivToClipboard} className="rounded-pill px-3 pb-1 pt-1 bg-gradient-primary text-white border border-none">Copy</button>
                 </div>
               </Modal.Header>
               <Modal.Body>

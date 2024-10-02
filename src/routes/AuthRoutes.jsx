@@ -37,6 +37,7 @@ function AuthRoutes() {
                     <>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/" element={<Navigate to="/dashboard" />} />
+                        <Route path="/signup" element={<Navigate to="/"/>}/>
                         <Route path="/update" element={<Update />}/>
                     </>
 
