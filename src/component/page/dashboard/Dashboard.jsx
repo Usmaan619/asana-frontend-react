@@ -177,9 +177,10 @@ const Dashboard = () => {
       const response = await updateTaskAPI(currentTask?._id, payload);
 
       if (response?.success) {
-        console.log('response.data: ', response.data);
-        toastSuccess()
+        
+        toastSuccess();
         fetchTicket();
+        handleCloseModal();
       }
     } catch (error) {}
   };
