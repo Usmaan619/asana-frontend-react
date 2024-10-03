@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import Sidebar from "../../common/sidebar/Sidebar";
 import Navbar from "../../common/navbar/Navbar";
 import { CARDDATA } from "../../../constant/constant";
+import { TailSpin } from "react-loader-spinner";
 import {
   createTaskDailyUpdateAPI,
   fetchTicketData,
@@ -16,6 +17,7 @@ import moment from "moment";
 const Update = () => {
   const [show, setShow] = useState(false);
   const [collaboratorSelect, setCollaboratorSelect] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -50,6 +52,7 @@ const Update = () => {
 
   const onSubmit = async (data) => {
     try {
+      setIsLoading(true);
       const payload = {
         ticketNo: data?.taskNumber,
         about: data?.textarea,
@@ -60,10 +63,13 @@ const Update = () => {
 
       const res = await createTaskDailyUpdateAPI(payload);
       if (res.success) {
+        setIsLoading(false);
         dailyUpdate();
         handleClose();
       }
-    } catch (error) {}
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
   const onCollaboratorSelect = (selectedList) =>
@@ -186,7 +192,7 @@ const Update = () => {
                                 <td class="align-middle text-center">
                                   {link.tags.map((item, index) => (
                                     <span
-                                      class="text-light bg-gradient-success mx-1 p-1 rounded-pill text-xs text-uppercase font-weight-bold"
+                                      class="text-light bg-gradient-success mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold"
                                       key={index}
                                     >
                                       {item.name ? item.name : "NA"}
@@ -286,8 +292,12 @@ const Update = () => {
                 displayValue="name"
               />
             </div>
-            <Button variant="primary" type="submit">
-              Submit
+            <Button variant="primary" type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <TailSpin color="#fff" width={20} height={20} />
+              ) : (
+                "Submit"
+              )}
             </Button>
           </form>
         </Modal.Body>

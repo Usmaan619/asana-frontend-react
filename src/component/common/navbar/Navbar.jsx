@@ -4,9 +4,11 @@ import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import { createTaskAPI, featchAllUser, featctAllTicket } from "../Api/api";
 import { toastSuccess } from "../../../servers/toastr.service";
+import { TailSpin } from "react-loader-spinner";
 
 const Navbar = ({ fetchTicket }) => {
   const { register, handleSubmit, setValue, reset } = useForm();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     featchTicketData();
@@ -29,7 +31,9 @@ const Navbar = ({ fetchTicket }) => {
   const handleCloseModal = () => setShow(false);
 
   const onSubmit = async (data) => {
+   
     try {
+      setIsLoading(true);
       const payload = {
         title: data?.title,
         assignedTo: data?.assignedTo,
@@ -41,7 +45,8 @@ const Navbar = ({ fetchTicket }) => {
       };
       const response = await createTaskAPI(payload);
       if (response?.success) {
-        toastSuccess(response?.message)
+        setIsLoading(false);
+        toastSuccess(response?.message);
         // await featchTicketData();
         await getTask();
         await fetchTicket();
@@ -51,7 +56,9 @@ const Navbar = ({ fetchTicket }) => {
 
         reset();
       }
-    } catch (error) {}
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
 
   const notifications = [
@@ -278,8 +285,16 @@ const Navbar = ({ fetchTicket }) => {
                       </div>
 
                       <div className="text-center">
-                        <button className="btn btn-primary" type="submit">
-                          Submit
+                        <button
+                          className="btn btn-primary"
+                          type="submit"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <TailSpin color="#fff" height={20} width={20} />
+                          ) : (
+                            "Submit"
+                          )}
                         </button>
                       </div>
                     </form>
