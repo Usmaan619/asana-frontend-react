@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginAPI } from "../../common/Api/api";
 import { SET_CASHE } from "../../../utils/helper";
 import { UserContext } from "../../../Context/UserContext";
+import { toastError, toastSuccess } from "../../../servers/toastr.service";
+import { TailSpin } from "react-loader-spinner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,10 +15,12 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const { setUserLogin } = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     try {
       event.preventDefault();
+      setIsLoading(true);
 
       const payload = {
         email,
@@ -25,18 +29,29 @@ const Login = () => {
       };
 
       const response = await loginAPI(payload);
+      console.log("response:-----------------login ", response);
 
       if (response?.login) {
         SET_CASHE("token", response?.token);
-        setUserLogin(response?.token)
+        setUserLogin(response?.token);
+        toastSuccess(response?.message);
+        setIsLoading(false);
+
         navigate("/dashboard");
+      }
+
+      if (response?.response?.data?.message) {
+        toastError(response?.response?.data?.message);
+        setIsLoading(false);
       }
       console.log("Login successful:", response);
     } catch (error) {
-      setError(
-        error.response ? error.response.data : "Login failed. Please try again."
-      );
-      console.error("Error:", error);
+      setIsLoading(false);
+
+      // setError(
+      //   error.response ? error.response.data : "Login failed. Please try again."
+      // );
+      console.error("Error:-----------login", error);
     }
   };
 
@@ -114,9 +129,14 @@ const Login = () => {
                         <div className="text-center">
                           <button
                             type="submit"
-                            className="btn bg-gradient-info w-100 mt-4 mb-0"
+                            className="btn bg-gradient-dark w-100 my-4 mb-2"
+                            disabled={isLoading}
                           >
-                            Sign in
+                            {isLoading ? (
+                              <TailSpin color="#fff" height={20} width={20} />
+                            ) : (
+                              "Sign in"
+                            )}
                           </button>
                         </div>
                       </form>

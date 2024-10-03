@@ -22,20 +22,19 @@ const Signup = () => {
     setIsLoading(true);
     try {
       const response = await signUpAPI(data);
-      console.log("response:signUpAPI ", response);
-      console.log(response.response.data.message);
-      if (response.response.data.message) {
+
+      if (response?.data?.success) {
+        navigate("/");
+        setIsLoading(false);
+      }
+
+      if (response?.response?.data?.message) {
         toastError(response.response.data.message);
         setIsLoading(false);
       }
-      if (response.success) {
-        navigate("/");
-      }
-      if (response.status === 200)
-        setSuccessMessage("Signup successful! You can now log in.");
     } catch (error) {
-
-      setErrorMessage("Signup failed. Please try again.");
+      // setErrorMessage("Signup failed. Please try again.");
+      setIsLoading(false);
     }
   };
 
