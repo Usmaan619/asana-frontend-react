@@ -42,6 +42,8 @@ const Update = () => {
 
   const [TaskData, setTaskData] = useState([]);
   const [dailyTask, setDailyTask] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -71,6 +73,16 @@ const Update = () => {
     setCollaboratorSelect(selectedList);
 
   const handleInputChange = (e) => e.target.value.replace(/[^0-9]/g, "");
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = dailyTask.slice(indexOfFirstItem, indexOfLastItem);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(dailyTask.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
 
   return (
     <>
@@ -148,7 +160,7 @@ const Update = () => {
                               <th class="text-secondary opacity-7"></th>
                             </tr>
                           </thead>
-                          {dailyTask.map((link, index) => (
+                          {currentItems.map((link, index) => (
                             <tbody key={index}>
                               <tr>
                                 <td>
@@ -187,6 +199,21 @@ const Update = () => {
                         </table>
                       </div>
                     </div>
+                    <nav aria-label="Page navigation" className="m-auto">
+                      <ul className="pagination justify-centent-center">
+                        {pageNumbers.map((number) => (
+                          <li key={number} className="page-item mx-1">
+                            <a
+                              onClick={() => paginate(number)}
+                              href="#!"
+                              className="page-link"
+                            >
+                              {number}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </nav>
                   </div>
                 </div>
               </div>
