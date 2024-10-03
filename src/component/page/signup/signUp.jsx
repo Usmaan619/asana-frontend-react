@@ -3,10 +3,13 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { signUpAPI } from "../../common/Api/api";
 import { useNavigate } from "react-router-dom";
+import { TailSpin } from "react-loader-spinner";
+import { toastError } from "../../../servers/toastr.service";
 
 const Signup = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -16,15 +19,22 @@ const Signup = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
       const response = await signUpAPI(data);
       console.log("response:signUpAPI ", response);
-      if(response.success){
+      console.log(response.response.data.message);
+      if (response.response.data.message) {
+        toastError(response.response.data.message);
+        setIsLoading(false);
+      }
+      if (response.success) {
         navigate("/");
       }
       if (response.status === 200)
         setSuccessMessage("Signup successful! You can now log in.");
     } catch (error) {
+
       setErrorMessage("Signup failed. Please try again.");
     }
   };
@@ -118,8 +128,13 @@ const Signup = () => {
                         <button
                           type="submit"
                           className="btn bg-gradient-dark w-100 my-4 mb-2"
+                          disabled={isLoading}
                         >
-                          Sign up
+                          {isLoading ? (
+                            <TailSpin color="#fff" height={20} width={20} />
+                          ) : (
+                            "Sign Up"
+                          )}
                         </button>
                       </div>
                     </form>

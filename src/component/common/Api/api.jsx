@@ -67,7 +67,7 @@ export const loginAPI = async (payload) => {
     const response = await axios.post(`${environment?.apiUrl}login`, payload);
     return response?.data;
   } catch (error) {
-    console.log("error: ", error);
+    return error
   }
 };
 
@@ -79,7 +79,7 @@ export const signUpAPI = async (payload) => {
     );
     return response?.data;
   } catch (error) {
-    console.log("error: ", error);
+return error
   }
 };
 
