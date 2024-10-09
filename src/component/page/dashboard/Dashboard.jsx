@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../../common/navbar/Navbar";
 import { toast } from "react-toastify";
 import {
@@ -9,125 +9,178 @@ import {
 import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
-import { CARDDATA } from "../../../constant/constant";
-// import "/home/skill/asana-frontend/src/component/page/dashboard/test.css";
-import "../dashboard/test.css";
 import Sidebar from "../../common/sidebar/Sidebar";
 import { toastSuccess } from "../../../servers/toastr.service";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { CARDDATA } from "../../../constant/constant";
 
-const TaskCard = ({ task, onClick }) => {
+// Task Card Component
+const TaskCard = ({ task, index, onClick }) => {
   return (
-    <div className="my-2" onClick={onClick}>
-      <div className="card task-card">
-        <div className="card-body">
-          <span className="card-text ">Task No.{task?.ticketNo}</span>
-
-          <div className="d-flex">
-            <h6 className="card-title">{task.title}</h6>
-          </div>
-          <div className="d-flex justify-content-between align-items-center">
-            <p className="card-text text-primary m-0">{task.priority}</p>
-            <p className="card-text text-warning m-0">{task.status}</p>
-          </div>
-          <div className="d-flex justify-content-between align-items-center mt-2">
-            <span className="h5 text-danger">{task.assignedTo?.name}</span>
-            <span className="h6 text-primary">
-              {new Date(task.dueDate).toLocaleDateString("en-IN")}
-            </span>
+    <Draggable draggableId={task._id} index={index}>
+      {(provided) => (
+        <div
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          className="my-2"
+          onClick={onClick}
+        >
+          <div className="card task-card">
+            <div className="card-body">
+              <span className="card-text">Task No.{task?.ticketNo}</span>
+              <div className="d-flex">
+                <h6 className="card-title">{task.title}</h6>
+              </div>
+              <div className="d-flex justify-content-between align-items-center">
+                <p className="card-text text-primary m-0">{task.priority}</p>
+                <p className="card-text text-warning m-0">{task.status}</p>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mt-2">
+                <span className="h5 text-danger">{task.assignedTo?.name}</span>
+                <span className="h6 text-primary">
+                  {new Date(task.dueDate).toLocaleDateString("en-IN")}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </Draggable>
   );
 };
 
-const AsanaStyleBoard = ({ tasks, handleModal }) => {
+// Task Board with Drag-and-Drop
+const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
   const getStatusTasks = (status) =>
     tasks.filter((task) => task.status === status);
 
   return (
-    <div className="asana-board container">
-      <div className="row">
-        {/* Open Tickets */}
-        <div className="col-lg-3">
-          <h5 className="text-uppercase text-secondary">Open</h5>
-          <div className="task-column task-column-overflow overflow-auto">
-            {getStatusTasks("open").map((task, index) => {
-              return (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  onClick={() => handleModal(task)}
-                />
-              );
-            })}
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="asana-board container">
+        <div className="row">
+          {/* Open Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-secondary">Open</h5>
+            <Droppable droppableId="open">
+              {(provided) => (
+                <div
+                  className="task-column task-column-overflow overflow-auto fiexd-h "
+                  ref={provided?.innerRef}
+                  {...provided?.droppableProps}
+                >
+                  {getStatusTasks("open").length === 0 && (
+                    <div style={{ minHeight: "50px" }}>No tasks</div>
+                  )}
+                  {getStatusTasks("open").map((task, index) => (
+                    <TaskCard
+                      key={task._id}
+                      task={task}
+                      index={index}
+                      onClick={() => handleModal(task)}
+                    />
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
           </div>
-        </div>
 
-        {/* In-Progress Tickets */}
-        <div className="col-lg-3">
-          <h5 className="text-uppercase text-secondary">In-Progress</h5>
-          <div className="task-column task-column-overflow overflow-auto">
-            {getStatusTasks("in-progress").map((task, index) => {
-              return (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  onClick={() => handleModal(task)}
-                />
-              );
-            })}
+          {/* In-Progress Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-secondary">In-Progress</h5>
+            <Droppable droppableId="in-progress">
+              {(provided) => {
+                return (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided?.innerRef}
+                    {...provided?.droppableProps}
+                  >
+                    {getStatusTasks("in-progress").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("in-progress").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                );
+              }}
+            </Droppable>
           </div>
-        </div>
 
-        {/* Completed Tickets */}
-        <div className="col-lg-3">
-          <h5 className="text-uppercase text-secondary">Completed</h5>
-          <div className="task-column task-column-overflow overflow-auto">
-            {getStatusTasks("completed").map((task, index) => {
-              return (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  onClick={() => handleModal(task)}
-                />
-              );
-            })}
+          {/* Completed Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-secondary">Completed</h5>
+            <Droppable droppableId="completed">
+              {(provided) => (
+                <div
+                  className="task-column task-column-overflow overflow-auto fiexd-h"
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {getStatusTasks("completed").length === 0 && (
+                    <div style={{ minHeight: "50px" }}>No tasks</div>
+                  )}
+                  {getStatusTasks("completed").map((task, index) => (
+                    <TaskCard
+                      key={task._id}
+                      task={task}
+                      index={index}
+                      onClick={() => handleModal(task)}
+                    />
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
           </div>
-        </div>
-        {/* Done Tickets */}
-        <div className="col-lg-3">
-          <h5 className="text-uppercase text-secondary">Done</h5>
-          <div className="task-column task-column-overflow overflow-auto">
-            {getStatusTasks("done").map((task, index) => (
-              <TaskCard
-                key={task._id}
-                task={task}
-                onClick={() => handleModal(task)}
-              />
-            ))}
+
+          {/* Done Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-secondary">Done</h5>
+            <Droppable droppableId="done">
+              {(provided) => (
+                <div
+                  className="task-column task-column-overflow overflow-auto fiexd-h"
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {getStatusTasks("done").length === 0 && (
+                    <div style={{ minHeight: "50px" }}>No tasks</div>
+                  )}
+                  {getStatusTasks("done").map((task, index) => (
+                    <TaskCard
+                      key={task._id}
+                      task={task}
+                      index={index}
+                      onClick={() => handleModal(task)}
+                    />
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
           </div>
         </div>
       </div>
-    </div>
+    </DragDropContext>
   );
 };
 
-const Dashboard = (task) => {
+// Main Dashboard Component
+const Dashboard = () => {
   const { register, handleSubmit, setValue } = useForm();
-
-  const [TaskData, setTaskData] = useState([]);
-
-  const [ticket, setticket] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [show, setShow] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
-  const [comments, setComments] = useState();
-  const [taskTicketNo, settaskTicketNo] = useState();
-  const [collaboratorSelect, setCollaboratorSelect] = useState([]);
-
-  const handleOpenModal = () => setShow(true);
-
-  const handleCloseModal = () => setShow(false);
+  const [TaskData, setTaskData] = useState([]);
 
   useEffect(() => {
     fetchTicket();
@@ -136,13 +189,48 @@ const Dashboard = (task) => {
   const fetchTicket = async () => {
     const data = await featctAllTicket();
     const user = await fetchTicketData();
+    setTasks(data);
     setTaskData(user);
-    setticket(data);
   };
+
+  const handleCloseModal = () => setShow(false);
+
+  const onDragEnd = async (result) => {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+
+    if (source.droppableId !== destination.droppableId) {
+      const updatedTasks = tasks.map((task) =>
+        task._id === result.draggableId
+          ? { ...task, status: destination.droppableId }
+          : task
+      );
+      setTasks(updatedTasks);
+      try {
+        const updatedTask = tasks.find(
+          (task) => task._id === result.draggableId
+        );
+        await updateTaskAPI(updatedTask._id, {
+          status: destination.droppableId,
+        });
+        toastSuccess("Task status updated successfully!");
+      } catch (error) {
+        toast.error("Error updating task status");
+      }
+    }
+  };
+
+  const [ticket, setticket] = useState([]);
+  const [comments, setComments] = useState();
+  const [taskTicketNo, settaskTicketNo] = useState();
+  const [collaboratorSelect, setCollaboratorSelect] = useState([]);
+
+  const handleOpenModal = () => setShow(true);
 
   // Handle modal and set the form values
   const handleModal = (index) => {
-    // console.log('index: ', index);
+    //
     setCurrentTask(index);
     setTaskValues(index);
     handleOpenModal();
@@ -153,6 +241,7 @@ const Dashboard = (task) => {
     if (task?.comments) setComments(task?.comments);
     settaskTicketNo(task?.ticketNo);
     setValue("title", task?.title || "");
+    setValue("assignedTo", task?.assignedTo?._id || "");
     setValue("assignedTo", task?.assignedTo?._id || "");
     setValue("priority", task?.priority || "medium");
     setValue("status", task?.status || "open");
@@ -199,10 +288,9 @@ const Dashboard = (task) => {
     setValue("collaborator", selectedList);
   };
 
-  const divRef = useRef(null); // Reference to the div you want to copy
+  const divRef = React.useRef(null); // Reference to the div you want to copy
 
   const copyDivToClipboard = () => {
-
     if (divRef.current) {
       const range = document.createRange();
       range.selectNode(divRef.current);
@@ -257,12 +345,15 @@ const Dashboard = (task) => {
               </div>
             ))}
           </div>
-
-          {/* Task Board */}
+          <div className="my-5">
+            <AsanaStyleBoard
+              tasks={tasks}
+              handleModal={handleModal}
+              onDragEnd={onDragEnd}
+            />
+          </div>
+          {/* Task Modal */}
           <div className="row my-5">
-            <AsanaStyleBoard tasks={ticket} handleModal={handleModal} />
-
-            {/* Task Modal */}
             <Modal
               size="lg"
               show={show}
@@ -274,8 +365,15 @@ const Dashboard = (task) => {
                   {currentTask ? "Edit Task" : "Add Task"}
                 </Modal.Title>
                 <div className="ms-auto d-flex align-items-center border border-black rounded-pill">
-                  <div ref={divRef} className="mx-2 my-0 h6">{taskTicketNo}</div>
-                  <button onClick={copyDivToClipboard} className="rounded-pill px-3 pb-1 pt-1 bg-gradient-primary text-white border border-none">Copy</button>
+                  <div ref={divRef} className="mx-2 my-0 h6">
+                    {taskTicketNo}
+                  </div>
+                  <button
+                    onClick={copyDivToClipboard}
+                    className="rounded-pill px-3 pb-1 pt-1 bg-gradient-primary text-white border border-none"
+                  >
+                    Copy
+                  </button>
                 </div>
               </Modal.Header>
               <Modal.Body>

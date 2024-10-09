@@ -27,20 +27,16 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log("response:Interceptor-------------- ", response);
-
     // if (response?.data?.message) toastSuccess(response?.data?.message);
 
     return response;
   },
   (error) => {
-    console.log("error:Interceptor ", error);
-
     // if (error?.message) toastError(error?.message);
 
     if (error.response && error.response.status === 401) {
       // For example, log out the user and redirect to login page
-      console.error("Unauthorized access, logging out...");
+
       localStorage.removeItem("token");
       window.location.href = "/login";
     }

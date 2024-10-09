@@ -10,42 +10,33 @@ import Sidebar from "../component/common/sidebar/Sidebar";
 import Update from "../component/page/update";
 
 function AuthRoutes() {
-    const { setUserLogin, UserLogin } = useContext(UserContext);
-    useEffect(() => {
-        let getvalue = GET_CASHE("token") ?? null
-        console.log('getvalue: ', getvalue);
-        setUserLogin(getvalue)
-        console.log('getvalue: ', getvalue);
-    }, [UserLogin])
+  const { setUserLogin, UserLogin } = useContext(UserContext);
+  useEffect(() => {
+    let getvalue = GET_CASHE("token") ?? null;
 
+    setUserLogin(getvalue);
+  }, [UserLogin]);
 
-    console.log('UserLogin: ', UserLogin);
-
-
-    return (
-        <>
-            <Routes>
-
-                {!UserLogin ? (
-                    <>
-                    
-                        <Route path="/" element={<Login />} />
-                        <Route path="/signup" element={<Signup />} />
-
-                    </>
-                ) : (
-                    <>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/" element={<Navigate to="/dashboard" />} />
-                        <Route path="/signup" element={<Navigate to="/"/>}/>
-                        <Route path="/update" element={<Update />}/>
-                    </>
-
-                )}
-                <Route path="*" element={<Login />} />
-            </Routes>
-        </>
-    );
+  return (
+    <>
+      <Routes>
+        {!UserLogin ? (
+          <>
+            <Route path="/" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+          </>
+        ) : (
+          <>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/signup" element={<Navigate to="/" />} />
+            <Route path="/update" element={<Update />} />
+          </>
+        )}
+        <Route path="*" element={<Login />} />
+      </Routes>
+    </>
+  );
 }
 
 export default AuthRoutes;
