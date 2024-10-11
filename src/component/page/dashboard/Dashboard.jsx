@@ -5,13 +5,14 @@ import {
   featctAllTicket,
   fetchTicketData,
   getAllTasksCountAPI,
+  getTaskByStatusAndIdAPI,
   updateTaskAPI,
 } from "../../common/Api/api";
 import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import Sidebar from "../../common/sidebar/Sidebar";
-import { toastSuccess } from "../../../servers/toastr.service";
+import { toastError, toastSuccess } from "../../../servers/toastr.service";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 // Task Card Component
@@ -178,6 +179,8 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 const Dashboard = () => {
   const { register, handleSubmit, setValue } = useForm();
   const [tasks, setTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
+  console.log("tasks:------------- ", tasks);
   const [show, setShow] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [TaskData, setTaskData] = useState([]);
@@ -190,6 +193,7 @@ const Dashboard = () => {
     const data = await featctAllTicket();
     const user = await fetchTicketData();
     setTasks(data);
+    setAllTasks(data);
     setTaskData(user);
   };
 
@@ -288,7 +292,10 @@ const Dashboard = () => {
     setValue("collaborator", selectedList);
   };
 
-  const divRef = React.useRef(null); // Reference to the div you want to copy
+  /**
+   *  Reference to the div you want to copy
+   * */
+  const divRef = React.useRef(null);
 
   const copyDivToClipboard = () => {
     if (divRef.current) {
@@ -348,10 +355,82 @@ const Dashboard = () => {
       percentageColor: "text-success",
     },
   ];
+
+  const [dropdownOpen, setDropdownOpen] = useState(false); // To toggle dropdown visibility
+  const [selectedAssignee, setSelectedAssignee] = useState(""); // To store the selected value
+  const [selectedStatus, setSelectedStatus] = useState(""); // To store the selected value
+  const dropdownRef = React.useRef(null); // Reference to the dropdown
+  const buttonRef = React.useRef(null); // Reference to the toggle button
+
+  // Toggle dropdown visibility
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+
+  // Handle selection from dropdown
+  const handleSelectChangeAssignee = (e) => {
+    setSelectedAssignee(e.target.value);
+    console.log("e.target.value: ", e.target.value);
+  };
+
+  const handleSelectChangeStatus = (e) => {
+    setSelectedStatus(e.target.value);
+    console.log("e.target.value: ", e.target.value);
+  };
+
+  const handleFilterTask = async () => {
+    try {
+      console.log("selectedStatus: ", selectedStatus);
+      console.log("selectedAssignee: ", selectedAssignee);
+
+      const payload = {
+        assignedTo: selectedAssignee,
+        status: selectedStatus,
+      };
+
+      const res = await getTaskByStatusAndIdAPI(payload);
+      if (res.success) {
+        console.log("res:getTaskByStatusAndIdAPI ", res?.tasks);
+        if (res?.tasks?.length) setTasks(res?.tasks);
+        if (!res?.tasks?.length) toastError("No Task Found");
+      }
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      // Close dropdown if click happens outside the dropdown and button
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener("click", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, [dropdownOpen]);
+
+  const resetTaskFilter = () => setTasks(allTasks);
+
   return (
     <React.Fragment>
       <Sidebar />
-      <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+      <main
+        className="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
+        // onClick={() => {
+        //   setDropdownOpen(false);
+        // }}
+      >
         <Navbar fetchTicket={fetchTicket} />
         <div className="container-fluid py-4">
           <div className="row">
@@ -391,7 +470,71 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-          <div className="my-5">
+          <div className="mt-3 w-100">
+            {/* filter modal */}
+            <div className=" mt-5  w-100 d-flex justify-content-end">
+              <button
+                className="btn btn-primary"
+                onClick={toggleDropdown}
+                ref={buttonRef}
+              >
+                Filter Task
+              </button>
+
+              {dropdownOpen && (
+                <div
+                  className="dropdown-menu p-4 show mt-6 w-25"
+                  ref={dropdownRef}
+                >
+                  <div className="mb-3">
+                    <label htmlFor="assginee">Assignee</label>
+                    <select
+                      className="form-select"
+                      onChange={handleSelectChangeAssignee}
+                      value={selectedAssignee}
+                    >
+                      {TaskData?.map((option, index) => (
+                        <option key={index} value={option._id}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <label htmlFor="assginee">Status</label>
+                  <div className="d-flex justify-content-between">
+                    <select
+                      className="form-control"
+                      onChange={handleSelectChangeStatus}
+                      value={selectedStatus}
+                    >
+                      <option value="">Select Status</option>
+                      <option value="open">open</option>
+                      <option value="pending">pending</option>
+                      <option value="in-progress">in-progress</option>
+                      <option value="testing">testing</option>
+                      <option value="completed">completed</option>
+                    </select>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <button
+                      className="btn btn-primary mt-3"
+                      onClick={handleFilterTask}
+                    >
+                      Filter
+                    </button>
+                    <button
+                      className="btn btn-primary mt-3"
+                      onClick={resetTaskFilter}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* filter modal end */}
+          </div>
+          <div className="my-1">
             <AsanaStyleBoard
               tasks={tasks}
               handleModal={handleModal}

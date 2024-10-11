@@ -89,6 +89,12 @@ const Update = () => {
   for (let i = 1; i <= Math.ceil(dailyTask.length / itemsPerPage); i++) {
     pageNumbers.push(i);
   }
+  const [status, setStatus] = useState("all");
+
+  const handleButtonClick = (newStatus) => {
+    setStatus(newStatus);
+    console.log(`Button clicked: ${newStatus}`);
+  };
 
   return (
     <>
@@ -97,46 +103,37 @@ const Update = () => {
         <Navbar />
         <div className="container-fluid py-4">
           <div className="row">
-            {CARDDATA.map((card, index) => (
-              <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4" key={index}>
-                <div className="card">
-                  <div className="card-body p-3">
-                    <div className="row">
-                      <div className="col-8">
-                        <div className="numbers">
-                          <p className="text-sm mb-0 text-capitalize font-weight-bold">
-                            {card.title}
-                          </p>
-                          <h5 className="font-weight-bolder mb-0">
-                            {card.value}
-                            <span
-                              className={`${card.percentageColor} text-sm font-weight-bolder`}
-                            >
-                              {card.percentage}
-                            </span>
-                          </h5>
-                        </div>
-                      </div>
-                      <div className="col-4 text-end">
-                        <div
-                          className={`icon icon-shape ${card.iconColor} shadow text-center border-radius-md`}
-                        >
-                          <i
-                            className={`${card.icon} text-lg opacity-10`}
-                            aria-hidden="true"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <div class="container-fluid py-4 ">
+              <div className="d-flex  justify-content-between">
+                <Button variant="primary" onClick={handleShow} className="">
+                  Update
+                </Button>
+                <div className="d-flex gap-4">
+                  <button
+                    className={`${
+                      status === "inprogress"
+                        ? "btn btn-outline-primary"
+                        : "btn btn-primary"
+                    } `}
+                    onClick={() => handleButtonClick("inprogress")}
+                  >
+                    In-progress
+                  </button>
+                  <button
+                    className={`${
+                      status === "complete"
+                        ? "btn btn-outline-primary"
+                        : "btn btn-primary"
+                    } `}
+                    onClick={() => handleButtonClick("complete")}
+                  >
+                    Complete
+                  </button>
+                  <button className={`btn btn-primary`}>Filter</button>
+                  <button className={`btn btn-primary`}>Reset</button>
                 </div>
               </div>
-            ))}
 
-            <div class="container-fluid py-4">
-              <Button variant="primary" onClick={handleShow} className="mt-3">
-                Update
-              </Button>
               <div class="row">
                 <div class="col-12">
                   <div class="card mb-4">

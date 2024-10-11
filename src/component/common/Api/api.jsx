@@ -8,9 +8,7 @@ export const featctAllTicket = async () => {
       `${environment?.apiUrl}task/getAllTasks`
     );
     return response.data;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+  } catch (error) {}
 };
 
 export const fetchTicketData = async () => {
@@ -19,9 +17,7 @@ export const fetchTicketData = async () => {
       `${environment?.apiUrl}user/getAllUser`
     );
     return response?.data?.users;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+  } catch (error) {}
 };
 
 export const featchAllUser = async () => {
@@ -30,9 +26,7 @@ export const featchAllUser = async () => {
       `${environment?.apiUrl}user/getAllUser`
     );
     return response?.data?.users;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+  } catch (error) {}
 };
 
 export const updateTaskAPI = async (id, payload) => {
@@ -43,9 +37,7 @@ export const updateTaskAPI = async (id, payload) => {
     );
 
     return response?.data;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+  } catch (error) {}
 };
 
 export const createTaskAPI = async (payload) => {
@@ -54,12 +46,9 @@ export const createTaskAPI = async (payload) => {
       `${environment?.apiUrl}task/create`,
       payload
     );
-    console.log("response: ", response);
 
     return response?.data;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+  } catch (error) {}
 };
 
 export const loginAPI = async (payload) => {
@@ -89,12 +78,9 @@ export const createTaskDailyUpdateAPI = async (payload) => {
       `${environment?.apiUrl}task/createTaskDailyUpdate`,
       payload
     );
-    console.log("response:createTaskDailyUpdateAPI ", response);
 
     return response?.data;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+  } catch (error) {}
 };
 
 export const getAllDailyTaskUpdate = async () => {
@@ -103,9 +89,7 @@ export const getAllDailyTaskUpdate = async () => {
       `${environment?.apiUrl}task/getAllDailyTaskUpdate`
     );
     return response?.data?.tasks;
-  } catch (error) {
-    console.log("error: ", error);
-  }
+  } catch (error) {}
 };
 
 export const getAllTasksCountAPI = async () => {
@@ -113,10 +97,9 @@ export const getAllTasksCountAPI = async () => {
     const response = await axiosInstance.get(
       `${environment?.apiUrl}task/getAllTasksCount`
     );
-    console.log("response: ", response);
+
     return response?.data;
   } catch (error) {
-    console.log("error: ", error);
     return error;
   }
 };
@@ -127,10 +110,9 @@ export const getTaskByStatusAndIdAPI = async (payload) => {
       `${environment?.apiUrl}task/getTaskByStatusAndId`,
       payload
     );
-    console.log("response: ", response);
+
     return response?.data;
   } catch (error) {
-    console.log("error: ", error);
     return error;
   }
 };
