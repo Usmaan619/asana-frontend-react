@@ -107,3 +107,30 @@ export const getAllDailyTaskUpdate = async () => {
     console.log("error: ", error);
   }
 };
+
+export const getAllTasksCountAPI = async () => {
+  try {
+    const response = await axiosInstance.get(
+      `${environment?.apiUrl}task/getAllTasksCount`
+    );
+    console.log("response: ", response);
+    return response?.data;
+  } catch (error) {
+    console.log("error: ", error);
+    return error;
+  }
+};
+
+export const getTaskByStatusAndIdAPI = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `${environment?.apiUrl}task/getTaskByStatusAndId`,
+      payload
+    );
+    console.log("response: ", response);
+    return response?.data;
+  } catch (error) {
+    console.log("error: ", error);
+    return error;
+  }
+};

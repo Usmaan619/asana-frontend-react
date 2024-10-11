@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import {
   featctAllTicket,
   fetchTicketData,
+  getAllTasksCountAPI,
   updateTaskAPI,
 } from "../../common/Api/api";
 import Modal from "react-bootstrap/Modal";
@@ -12,7 +13,6 @@ import Multiselect from "multiselect-react-dropdown";
 import Sidebar from "../../common/sidebar/Sidebar";
 import { toastSuccess } from "../../../servers/toastr.service";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { CARDDATA } from "../../../constant/constant";
 
 // Task Card Component
 const TaskCard = ({ task, index, onClick }) => {
@@ -302,6 +302,52 @@ const Dashboard = () => {
     }
   };
 
+  const [getAllTasksCount, setGetAllTasksCount] = useState();
+  console.log("getAllTasksCount: ", getAllTasksCount);
+
+  React.useEffect(() => {
+    new Promise(async (resolve, reject) => {
+      const res = await getAllTasksCountAPI();
+      console.log("res: ", res);
+      setGetAllTasksCount(res);
+      resolve(1);
+    });
+  }, []);
+
+  const CARDDATA = [
+    {
+      title: "Total Tasks",
+      value: getAllTasksCount?.totalTasks,
+      // percentage: "+55%",
+      icon: "ni ni-money-coins",
+      iconColor: "bg-gradient-primary",
+      percentageColor: "text-success",
+    },
+    {
+      title: "In progress Tasks",
+      value: getAllTasksCount?.inCompeleteTask,
+      // percentage: "+3%",
+      icon: "ni ni-world",
+      iconColor: "bg-gradient-primary",
+      percentageColor: "text-success",
+    },
+    {
+      title: "Completed Tasks",
+      value: getAllTasksCount?.compeletedTask,
+      // percentage: "+3%",
+      icon: "ni ni-world",
+      iconColor: "bg-gradient-primary",
+      percentageColor: "text-success",
+    },
+    {
+      title: "Panding Tasks",
+      value: getAllTasksCount?.pandingTask,
+      // percentage: "+3%",
+      icon: "ni ni-world",
+      iconColor: "bg-gradient-primary",
+      percentageColor: "text-success",
+    },
+  ];
   return (
     <React.Fragment>
       <Sidebar />
