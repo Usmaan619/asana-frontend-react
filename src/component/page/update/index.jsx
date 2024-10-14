@@ -11,8 +11,10 @@ import {
   createTaskDailyUpdateAPI,
   fetchTicketData,
   getAllDailyTaskUpdate,
+  getDailyTaskUpdateFilterAPI,
 } from "../../common/Api/api";
 import moment from "moment";
+import { toastError } from "../../../servers/toastr.service";
 
 const Update = () => {
   const [show, setShow] = useState(false);
@@ -22,6 +24,7 @@ const Update = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -36,9 +39,11 @@ const Update = () => {
     setTaskData(user);
   };
 
+  const [resetFilter, setResetFilter] = useState();
+
   const dailyUpdate = async () => {
     const task = await getAllDailyTaskUpdate();
-
+    setResetFilter(task);
     setDailyTask(task);
   };
 
@@ -62,10 +67,11 @@ const Update = () => {
       };
 
       const res = await createTaskDailyUpdateAPI(payload);
-      if (res.success) {
+      if (res?.success) {
         setIsLoading(false);
         dailyUpdate();
         handleClose();
+        reset();
       }
     } catch (error) {
       setIsLoading(false);
@@ -78,8 +84,6 @@ const Update = () => {
   const onCollaboratorRemove = (selectedList) =>
     setCollaboratorSelect(selectedList);
 
-  const handleInputChange = (e) => e.target.value.replace(/[^0-9]/g, "");
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -89,11 +93,31 @@ const Update = () => {
   for (let i = 1; i <= Math.ceil(dailyTask.length / itemsPerPage); i++) {
     pageNumbers.push(i);
   }
-  const [status, setStatus] = useState("all");
 
-  const handleButtonClick = (newStatus) => {
-    setStatus(newStatus);
-    console.log(`Button clicked: ${newStatus}`);
+  const [startDate, setStartDate] = useState();
+
+  const handleFilterTask = async () => {
+    try {
+      console.log("startDate: ", startDate);
+      if (!startDate) {
+        return toastError(" Please select start date!");
+      }
+      const res = await getDailyTaskUpdateFilterAPI(startDate);
+      console.log("res: ", res?.data);
+      if (res?.success) {
+        if (res?.data?.length) setDailyTask(res?.data);
+        console.log("res?.data?.length: ", res?.data?.length);
+
+        if (!res?.data?.length) toastError("No Task Found");
+      }
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  const resetTaskFilter = () => {
+    setDailyTask(resetFilter);
+    setStartDate('');
   };
 
   return (
@@ -105,32 +129,33 @@ const Update = () => {
           <div className="row">
             <div class="container-fluid py-4 ">
               <div className="d-flex  justify-content-between">
-                <Button variant="primary" onClick={handleShow} className="">
+                <Button variant="primary" onClick={handleShow} className="my-3">
                   Update
                 </Button>
                 <div className="d-flex gap-4">
+                  <div className="">
+                    <label htmlFor="startDate">Start Date</label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      className="form-control mb-2"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+
                   <button
-                    className={`${
-                      status === "inprogress"
-                        ? "btn btn-outline-primary"
-                        : "btn btn-primary"
-                    } `}
-                    onClick={() => handleButtonClick("inprogress")}
+                    className={`btn btn-primary my-3`}
+                    onClick={handleFilterTask}
                   >
-                    In-progress
+                    Filter
                   </button>
                   <button
-                    className={`${
-                      status === "complete"
-                        ? "btn btn-outline-primary"
-                        : "btn btn-primary"
-                    } `}
-                    onClick={() => handleButtonClick("complete")}
+                    className={`btn btn-primary my-3`}
+                    onClick={resetTaskFilter}
                   >
-                    Complete
+                    Reset
                   </button>
-                  <button className={`btn btn-primary`}>Filter</button>
-                  <button className={`btn btn-primary`}>Reset</button>
                 </div>
               </div>
 
@@ -148,6 +173,9 @@ const Update = () => {
                               <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Ticket No.
                               </th>
+                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Assigned To
+                              </th>
                               <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                 About
                               </th>
@@ -163,17 +191,25 @@ const Update = () => {
                               <th class="text-secondary opacity-7"></th>
                             </tr>
                           </thead>
-                          {currentItems.map((link, index) => (
+                          {currentItems?.map((link, index) => (
                             <tbody key={index}>
                               <tr>
                                 <td>
                                   <h6 class="font-weight-bold ms-4">
-                                    {link.ticketNo ? link.ticketNo : "NA"}
+                                    {link?.ticketNo ? link?.ticketNo : "NA"}
                                   </h6>
                                 </td>
                                 <td>
+                                  <span class="text-light bg-gradient-primary mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold">
+                                    {link?.assignedTo?.name
+                                      ? link?.assignedTo?.name
+                                      : "NA"}
+                                  </span>
+                                </td>
+
+                                <td>
                                   <p class="text-xs font-weight-bold mb-0">
-                                    {link.about ? link.about : "NA"}
+                                    {link?.about ? link?.about : "NA"}
                                   </p>
                                 </td>
                                 <td class="align-middle text-center text-sm">
@@ -183,11 +219,13 @@ const Update = () => {
                                 </td>
                                 <td class="align-middle text-center">
                                   <span class="text-xs font-weight-bold">
-                                    {link.description ? link.description : "NA"}
+                                    {link?.description
+                                      ? link?.description
+                                      : "NA"}
                                   </span>
                                 </td>
                                 <td class="align-middle text-center">
-                                  {link.tags.map((item, index) => (
+                                  {link?.tags?.map((item, index) => (
                                     <span
                                       class="text-light bg-gradient-success mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold"
                                       key={index}
@@ -204,7 +242,7 @@ const Update = () => {
                     </div>
                     <nav aria-label="Page navigation" className="m-auto">
                       <ul className="pagination justify-centent-center">
-                        {pageNumbers.map((number) => (
+                        {pageNumbers?.map((number) => (
                           <li key={number} className="page-item mx-1">
                             <a
                               onClick={() => paginate(number)}

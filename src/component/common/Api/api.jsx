@@ -116,3 +116,14 @@ export const getTaskByStatusAndIdAPI = async (payload) => {
     return error;
   }
 };
+
+export const getDailyTaskUpdateFilterAPI = async (startDate) => {
+  try {
+    const response = await axiosInstance.get(
+      `${environment?.apiUrl}task/tickets/filter?startDate=${startDate}`
+    );
+    return response?.data;
+  } catch (error) {
+    return error;
+  }
+};

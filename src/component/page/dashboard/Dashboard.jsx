@@ -180,7 +180,7 @@ const Dashboard = () => {
   const { register, handleSubmit, setValue } = useForm();
   const [tasks, setTasks] = useState([]);
   const [allTasks, setAllTasks] = useState([]);
-  console.log("tasks:------------- ", tasks);
+
   const [show, setShow] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [TaskData, setTaskData] = useState([]);
@@ -310,12 +310,11 @@ const Dashboard = () => {
   };
 
   const [getAllTasksCount, setGetAllTasksCount] = useState();
-  console.log("getAllTasksCount: ", getAllTasksCount);
 
   React.useEffect(() => {
     new Promise(async (resolve, reject) => {
       const res = await getAllTasksCountAPI();
-      console.log("res: ", res);
+
       setGetAllTasksCount(res);
       resolve(1);
     });
@@ -368,19 +367,14 @@ const Dashboard = () => {
   // Handle selection from dropdown
   const handleSelectChangeAssignee = (e) => {
     setSelectedAssignee(e.target.value);
-    console.log("e.target.value: ", e.target.value);
   };
 
   const handleSelectChangeStatus = (e) => {
     setSelectedStatus(e.target.value);
-    console.log("e.target.value: ", e.target.value);
   };
 
   const handleFilterTask = async () => {
     try {
-      console.log("selectedStatus: ", selectedStatus);
-      console.log("selectedAssignee: ", selectedAssignee);
-
       const payload = {
         assignedTo: selectedAssignee,
         status: selectedStatus,
@@ -388,13 +382,10 @@ const Dashboard = () => {
 
       const res = await getTaskByStatusAndIdAPI(payload);
       if (res.success) {
-        console.log("res:getTaskByStatusAndIdAPI ", res?.tasks);
         if (res?.tasks?.length) setTasks(res?.tasks);
         if (!res?.tasks?.length) toastError("No Task Found");
       }
-    } catch (error) {
-      console.log("error: ", error);
-    }
+    } catch (error) {}
   };
 
   // Close dropdown when clicking outside
@@ -425,12 +416,7 @@ const Dashboard = () => {
   return (
     <React.Fragment>
       <Sidebar />
-      <main
-        className="main-content position-relative max-height-vh-100 h-100 border-radius-lg"
-        // onClick={() => {
-        //   setDropdownOpen(false);
-        // }}
-      >
+      <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar fetchTicket={fetchTicket} />
         <div className="container-fluid py-4">
           <div className="row">
