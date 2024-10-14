@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { signUpAPI } from "../../common/Api/api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
 import { toastError } from "../../../servers/toastr.service";
 
@@ -149,9 +149,12 @@ const Signup = () => {
                     )}
                     <p className="text-sm mt-3 mb-0">
                       Already have an account?{" "}
-                      <a href="#" className="text-dark font-weight-bolder">
-                        Sign in
-                      </a>
+                      <Link
+                        to="/"
+                        className="text-dark font-weight-bolder"
+                      >
+                        Sign up
+                      </Link>
                     </p>
                   </div>
                 </div>

@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import { createTaskAPI, featchAllUser, featctAllTicket } from "../Api/api";
 import { toastSuccess } from "../../../servers/toastr.service";
 import { TailSpin } from "react-loader-spinner";
+import { CLEAR_CASHE } from "../../../utils/helper";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../../Context/UserContext";
 
 const Navbar = ({ fetchTicket }) => {
   const { register, handleSubmit, setValue, reset } = useForm();
@@ -31,7 +34,6 @@ const Navbar = ({ fetchTicket }) => {
   const handleCloseModal = () => setShow(false);
 
   const onSubmit = async (data) => {
-   
     try {
       setIsLoading(true);
       const payload = {
@@ -117,6 +119,7 @@ const Navbar = ({ fetchTicket }) => {
       ),
     },
   ];
+  const navigate = useNavigate();
 
   // multi option selector
   // States for each MultiSelect
@@ -153,7 +156,8 @@ const Navbar = ({ fetchTicket }) => {
         break;
     }
   };
-
+  const { setUserLogin, UserLogin } = useContext(UserContext);
+  console.log('UserLogin: ', UserLogin);
   return (
     <React.Fragment>
       {/* <!-- Navbar --> */}
@@ -316,21 +320,21 @@ const Navbar = ({ fetchTicket }) => {
               <li className="nav-item d-flex align-items-center">
                 <a
                   className="btn btn-outline-primary btn-sm mb-0 me-3"
-                  target="_blank"
-                  href="#/"
+                  onClick={() => {
+                    CLEAR_CASHE();
+                    navigate("/");
+                    setUserLogin(null);
+                  }}
                 >
-                  Online Builder
+                  logout
                 </a>
               </li>
-              <li className="nav-item d-flex align-items-center">
-                <a
-                  href="#/"
-                  className="nav-link text-body font-weight-bold px-0"
-                >
+              {/* <li className="nav-item d-flex align-items-center">
+                <a className="nav-link text-body font-weight-bold px-0">
                   <i className="fa fa-user me-sm-1"></i>
                   <span className="d-sm-inline d-none">Sign In</span>
                 </a>
-              </li>
+              </li> */}
               <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
                 <a
                   href="#/"
