@@ -92,6 +92,18 @@ export const signUpAPI = async (payload) => {
   }
 };
 
+export const forgotPasswordAPI = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${environment?.apiUrl}user/reset-password`,
+      payload
+    );
+    return response?.data;
+  } catch (error) {
+    throw error?.response;
+  }
+};
+
 export const createTaskDailyUpdateAPI = async (payload) => {
   try {
     const response = await axiosInstance.post(
