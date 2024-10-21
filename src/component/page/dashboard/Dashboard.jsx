@@ -9,11 +9,14 @@ import {
   updateTaskAPI,
 } from "../../common/Api/api";
 import Modal from "react-bootstrap/Modal";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import Sidebar from "../../common/sidebar/Sidebar";
 import { toastError, toastSuccess } from "../../../servers/toastr.service";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import ReactQuill from "react-quill";
+import { quillFormats, quillModules } from "../../../constant/constant";
+import { getFirstAndLastLatterOfName } from "../../../utils/helper";
 
 // Task Card Component
 const TaskCard = ({ task, index, onClick }) => {
@@ -38,7 +41,9 @@ const TaskCard = ({ task, index, onClick }) => {
                 <p className="card-text text-warning m-0">{task.status}</p>
               </div>
               <div className="d-flex justify-content-between align-items-center mt-2">
-                <span className="h5 text-danger">{task.assignedTo?.name}</span>
+                <span className="h5 text-danger text-uppercase">
+                  {getFirstAndLastLatterOfName(task.assignedTo?.name)}
+                </span>
                 <span className="h6 text-primary">
                   {new Date(task.dueDate).toLocaleDateString("en-IN")}
                 </span>
@@ -185,13 +190,30 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
 // Main Dashboard Component
 const Dashboard = () => {
-  const { register, handleSubmit, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm();
   const [tasks, setTasks] = useState([]);
   const [allTasks, setAllTasks] = useState([]);
 
   const [show, setShow] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [TaskData, setTaskData] = useState([]);
+
+  const [ticket, setticket] = useState([]);
+  const [comments, setComments] = useState();
+  const [taskTicketNo, settaskTicketNo] = useState();
+  const [collaboratorSelect, setCollaboratorSelect] = useState([]);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false); // To toggle dropdown visibility
+  const [selectedAssignee, setSelectedAssignee] = useState(""); // To store the selected value
+  const [selectedStatus, setSelectedStatus] = useState(""); // To store the selected value
+  const dropdownRef = React.useRef(null); // Reference to the dropdown
+  const buttonRef = React.useRef(null); // Reference to the toggle button
 
   useEffect(() => {
     fetchTicket();
@@ -214,29 +236,29 @@ const Dashboard = () => {
 
     if (source.droppableId !== destination.droppableId) {
       const updatedTasks = tasks.map((task) =>
-        task._id === result.draggableId
-          ? { ...task, status: destination.droppableId }
+        task._id === result?.draggableId
+          ? { ...task, status: destination?.droppableId }
           : task
       );
       setTasks(updatedTasks);
       try {
         const updatedTask = tasks.find(
-          (task) => task._id === result.draggableId
+          (task) => task?._id === result?.draggableId
         );
-        await updateTaskAPI(updatedTask._id, {
-          status: destination.droppableId,
+        const res = await updateTaskAPI(updatedTask._id, {
+          status: destination?.droppableId,
         });
+
+        if (res?.success) {
+          await statusCount();
+        }
+        console.log("res:updateTaskAPI ", res);
         toastSuccess("Task status updated successfully!");
       } catch (error) {
         toast.error("Error updating task status");
       }
     }
   };
-
-  const [ticket, setticket] = useState([]);
-  const [comments, setComments] = useState();
-  const [taskTicketNo, settaskTicketNo] = useState();
-  const [collaboratorSelect, setCollaboratorSelect] = useState([]);
 
   const handleOpenModal = () => setShow(true);
 
@@ -263,6 +285,7 @@ const Dashboard = () => {
       task?.dueDate ? new Date(task?.dueDate).toISOString().split("T")[0] : ""
     );
     setValue("description", task?.description || "");
+
     setCollaboratorSelect(task?.collaborators || []);
   };
 
@@ -286,7 +309,9 @@ const Dashboard = () => {
         fetchTicket();
         handleCloseModal();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("error: ", error);
+    }
   };
 
   // Multi-select event handlers
@@ -321,12 +346,16 @@ const Dashboard = () => {
 
   React.useEffect(() => {
     new Promise(async (resolve, reject) => {
-      const res = await getAllTasksCountAPI();
-
-      setGetAllTasksCount(res);
+      await statusCount();
       resolve(1);
     });
   }, []);
+
+  const statusCount = async () => {
+    const res = await getAllTasksCountAPI();
+
+    setGetAllTasksCount(res);
+  };
 
   const CARDDATA = [
     {
@@ -362,12 +391,6 @@ const Dashboard = () => {
       percentageColor: "text-success",
     },
   ];
-
-  const [dropdownOpen, setDropdownOpen] = useState(false); // To toggle dropdown visibility
-  const [selectedAssignee, setSelectedAssignee] = useState(""); // To store the selected value
-  const [selectedStatus, setSelectedStatus] = useState(""); // To store the selected value
-  const dropdownRef = React.useRef(null); // Reference to the dropdown
-  const buttonRef = React.useRef(null); // Reference to the toggle button
 
   // Toggle dropdown visibility
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
@@ -543,21 +566,24 @@ const Dashboard = () => {
               onHide={handleCloseModal}
               aria-labelledby="example-modal-sizes-title-sm"
             >
-              <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-sm">
+              <Modal.Header closeButton>
+                <Modal.Title
+                  className="d-flex gap-4 align-items-center"
+                  id="example-modal-sizes-title-sm"
+                >
                   {currentTask ? "Edit Task" : "Add Task"}
-                </Modal.Title>
-                <div className="ms-auto d-flex align-items-center border border-black rounded-pill">
-                  <div ref={divRef} className="mx-2 my-0 h6">
-                    {taskTicketNo}
+                  <div className="ms-auto d-flex align-items-center border border-black rounded-pill">
+                    <div ref={divRef} className="mx-2 my-0 h6">
+                      {taskTicketNo}
+                    </div>
+                    <button
+                      onClick={copyDivToClipboard}
+                      className="rounded-pill font-sm bg-gradient-primary text-white border border-none"
+                    >
+                      Copy
+                    </button>
                   </div>
-                  <button
-                    onClick={copyDivToClipboard}
-                    className="rounded-pill px-3 pb-1 pt-1 bg-gradient-primary text-white border border-none"
-                  >
-                    Copy
-                  </button>
-                </div>
+                </Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -568,8 +594,15 @@ const Dashboard = () => {
                       className="form-control"
                       id="task_name"
                       placeholder="Enter Task"
-                      {...register("title")}
+                      {...register("title", {
+                        required: "Task name is required",
+                      })}
                     />
+                    {errors.title && (
+                      <span className="text-danger">
+                        {errors.title.message}
+                      </span>
+                    )}
                   </div>
 
                   <div className="form-group">
@@ -577,7 +610,9 @@ const Dashboard = () => {
                     <select
                       className="form-control"
                       id="assginee"
-                      {...register("assignedTo")}
+                      {...register("assignedTo", {
+                        required: "Assigne is required",
+                      })}
                     >
                       {TaskData?.map((option, index) => (
                         <option key={index} value={option._id}>
@@ -585,6 +620,11 @@ const Dashboard = () => {
                         </option>
                       ))}
                     </select>
+                    {errors.assignedTo && (
+                      <span className="text-danger">
+                        {errors.assignedTo.message}
+                      </span>
+                    )}
                   </div>
 
                   {/* Priority Dropdown */}
@@ -629,18 +669,27 @@ const Dashboard = () => {
                   </div>
 
                   {/* Description */}
-                  <div className="form-group">
-                    <label htmlFor="description">Description</label>
-                    <textarea
-                      className="form-control"
-                      id="description"
-                      rows="4"
-                      {...register("description")}
-                    ></textarea>
+                  <div className="form-group ">
+                    <Controller
+                      name="description"
+                      control={control}
+                      render={({ field }) => {
+                        return (
+                          <ReactQuill
+                            theme="snow"
+                            {...field}
+                            modules={quillModules}
+                            formats={quillFormats}
+                            placeholder="write your content ...."
+                            style={{ height: "220px" }}
+                          ></ReactQuill>
+                        );
+                      }}
+                    />
                   </div>
 
                   {/* Collaborators */}
-                  <div className="form-group">
+                  <div className="form-group mt-5">
                     <label>Collaborator</label>
                     <Multiselect
                       options={TaskData}

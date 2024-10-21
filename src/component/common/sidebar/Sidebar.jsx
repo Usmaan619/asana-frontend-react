@@ -11,24 +11,24 @@ const Sidebar = () => {
       label: "Dashboard",
       isActive: window?.location?.pathname === "/dashboard" ? true : false,
     },
-    {
-      // path: "/tables",
-      icon: <HiHome />,
-      label: "Board",
-      isActive: false,
-    },
+    // {
+    //   // path: "/tables",
+    //   icon: <HiHome />,
+    //   label: "Board",
+    //   isActive: false,
+    // },
     {
       path: "/update",
       icon: <HiHome />,
       label: "Update",
       isActive: window?.location?.pathname === "/update" ? true : false,
     },
-    {
-      // path: "/virtual-reality",
-      icon: <HiHome />,
-      label: "Virtual Reality",
-      isActive: false,
-    },
+    // {
+    //   // path: "/virtual-reality",
+    //   icon: <HiHome />,
+    //   label: "Virtual Reality",
+    //   isActive: false,
+    // },
   ];
 
   return (

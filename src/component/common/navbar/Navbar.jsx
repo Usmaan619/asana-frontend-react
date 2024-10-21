@@ -5,7 +5,11 @@ import Multiselect from "multiselect-react-dropdown";
 import { createTaskAPI, featchAllUser, featctAllTicket } from "../Api/api";
 import { toastSuccess } from "../../../servers/toastr.service";
 import { TailSpin } from "react-loader-spinner";
-import { CLEAR_CASHE } from "../../../utils/helper";
+import {
+  CLEAR_CASHE,
+  GET_CASHE,
+  getFirstAndLastLatterOfName,
+} from "../../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../Context/UserContext";
 import "quill/dist/quill.snow.css";
@@ -13,7 +17,13 @@ import ReactQuill from "react-quill";
 import { quillFormats, quillModules } from "../../../constant/constant";
 
 const Navbar = ({ fetchTicket }) => {
-  const { register, handleSubmit, setValue, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState(null);
   const [description, setdescription] = useState();
@@ -39,19 +49,18 @@ const Navbar = ({ fetchTicket }) => {
   const handleCloseModal = () => setShow(false);
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Append other fields to formData
-    formData.append("title", data?.title);
-    formData.append("assignedTo", data?.assignedTo);
-    formData.append("priority", data?.priority);
-    formData.append("status", data?.status);
-    formData.append("dueDate", data?.dueDate);
-    formData.append("description", description);
-    formData.append("collaborators", JSON.stringify(data?.collaborator)); // Stringify array or object if needed
-
     try {
+      // Append other fields to formData
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("title", data?.title);
+      formData.append("assignedTo", data?.assignedTo);
+      formData.append("priority", data?.priority);
+      formData.append("status", data?.status);
+      formData.append("dueDate", data?.dueDate);
+      formData.append("description", description);
+      formData.append("collaborators", JSON.stringify(data?.collaborator)); // Stringify array or object if needed
+
       setIsLoading(false);
 
       const response = await createTaskAPI(formData);
@@ -72,62 +81,6 @@ const Navbar = ({ fetchTicket }) => {
     }
   };
 
-  const notifications = [
-    {
-      imgSrc: "../assets/img/team-2.jpg",
-      title: "New message",
-      description: "from Laur",
-      timeAgo: "13 minutes ago",
-      icon: "fa fa-clock",
-    },
-    {
-      imgSrc: "../assets/img/small-logos/logo-spotify.svg",
-      title: "New album",
-      description: "by Travis Scott",
-      timeAgo: "1 day",
-      icon: "fa fa-clock",
-    },
-    {
-      imgSrc: "",
-      title: "Payment successfully completed",
-      description: "",
-      timeAgo: "2 days",
-      icon: "fa fa-clock",
-      svg: (
-        <svg
-          width="12px"
-          height="12px"
-          viewBox="0 0 43 36"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-        >
-          <title>credit-card</title>
-          <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-            <g
-              transform="translate(-2169.000000, -745.000000)"
-              fill="#FFFFFF"
-              fillRule="nonzero"
-            >
-              <g transform="translate(1716.000000, 291.000000)">
-                <g transform="translate(453.000000, 454.000000)">
-                  <path
-                    className="color-background"
-                    d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z"
-                    opacity="0.593633743"
-                  ></path>
-                  <path
-                    className="color-background"
-                    d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z"
-                  ></path>
-                </g>
-              </g>
-            </g>
-          </g>
-        </svg>
-      ),
-    },
-  ];
   const navigate = useNavigate();
 
   // multi option selector
@@ -165,7 +118,7 @@ const Navbar = ({ fetchTicket }) => {
         break;
     }
   };
-  const { setUserLogin, UserLogin } = useContext(UserContext);
+  const { setUserLogin } = useContext(UserContext);
 
   const handleProcedureContentChange = (content) => {
     console.log("content----==========", content);
@@ -222,8 +175,15 @@ const Navbar = ({ fetchTicket }) => {
                           className="form-control"
                           id="task_name"
                           placeholder="Enter Task"
-                          {...register("title")}
+                          {...register("title", {
+                            required: "Task name is required",
+                          })}
                         />
+                        {errors.title && (
+                          <span className="text-danger">
+                            {errors.title.message}
+                          </span>
+                        )}
                       </div>
 
                       <div className="form-group">
@@ -231,7 +191,9 @@ const Navbar = ({ fetchTicket }) => {
                         <select
                           className="form-control"
                           id="assginee"
-                          {...register("assignedTo")}
+                          {...register("assignedTo", {
+                            required: "Assigne is required",
+                          })}
                         >
                           <option value="">Choose...</option>
                           {TaskData.map((option, index) => (
@@ -240,6 +202,11 @@ const Navbar = ({ fetchTicket }) => {
                             </option>
                           ))}
                         </select>
+                        {errors.assignedTo && (
+                          <span className="text-danger">
+                            {errors.assignedTo.message}
+                          </span>
+                        )}
                       </div>
 
                       {/* Priority MultiSelect */}
@@ -295,7 +262,7 @@ const Navbar = ({ fetchTicket }) => {
                       </div>
 
                       {/* Collaborator MultiSelect */}
-                      <div className="form-group mt-3">
+                      <div className="form-group mt-5">
                         <label htmlFor="collaborator">Collaborator</label>
                         <Multiselect
                           placeholder="Collaborator"
@@ -306,10 +273,11 @@ const Navbar = ({ fetchTicket }) => {
                           displayValue="name"
                         />
                       </div>
-                      <div>
+                      <div className="from-group mb-2">
                         <label htmlFor="file">Upload File:</label>
                         <input
                           type="file"
+                          className="form-control"
                           {...register("file")}
                           onChange={handleFileChange}
                         />
@@ -332,16 +300,6 @@ const Navbar = ({ fetchTicket }) => {
                   </Modal.Body>
                 </Modal>
               </div>
-              <div className="input-group">
-                <span className="input-group-text text-body">
-                  <i className="fas fa-search" aria-hidden="true"></i>
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Type here..."
-                />
-              </div>
             </div>
             <ul className="navbar-nav justify-content-end">
               <li className="nav-item d-flex align-items-center">
@@ -356,78 +314,13 @@ const Navbar = ({ fetchTicket }) => {
                   logout
                 </a>
               </li>
-              {/* <li className="nav-item d-flex align-items-center">
-                <a className="nav-link text-body font-weight-bold px-0">
-                  <i className="fa fa-user me-sm-1"></i>
-                  <span className="d-sm-inline d-none">Sign In</span>
-                </a>
-              </li> */}
-              <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
-                <a
-                  href="#/"
-                  className="nav-link text-body p-0"
-                  id="iconNavbarSidenav"
-                >
-                  <div className="sidenav-toggler-inner">
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                  </div>
-                </a>
-              </li>
-              <li className="nav-item px-3 d-flex align-items-center">
-                <a href="#/" className="nav-link text-body p-0">
-                  <i className="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
-                </a>
-              </li>
-              <li className="nav-item dropdown pe-2 d-flex align-items-center">
-                <a
-                  href="#/"
-                  className="nav-link text-body p-0"
-                  id="dropdownMenuButton"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i className="fa fa-bell cursor-pointer"></i>
-                </a>
-                <ul
-                  className="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4"
-                  aria-labelledby="dropdownMenuButton"
-                >
-                  {notifications.map((notification, index) => (
-                    <li className="mb-2" key={index}>
-                      <a className="dropdown-item border-radius-md" href="#/">
-                        <div className="d-flex py-1">
-                          <div className="my-auto">
-                            {notification.imgSrc ? (
-                              <img
-                                src={notification.imgSrc}
-                                className="avatar avatar-sm me-3"
-                                alt="notification"
-                              />
-                            ) : (
-                              <div className="avatar avatar-sm bg-gradient-secondary me-3 my-auto">
-                                {notification.svg}
-                              </div>
-                            )}
-                          </div>
-                          <div className="d-flex flex-column justify-content-center">
-                            <h6 className="text-sm font-weight-normal mb-1">
-                              <span className="font-weight-bold">
-                                {notification.title}
-                              </span>{" "}
-                              {notification.description}
-                            </h6>
-                            <p className="text-xs text-secondary mb-0">
-                              <i className={notification.icon + " me-1"}></i>{" "}
-                              {notification.timeAgo}
-                            </p>
-                          </div>
-                        </div>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+
+              <li className="nav-item d-flex align-items-center">
+                <div className="profile-dev bg-gradient-dark shadow mb-0 me-3 text-uppercase">
+                  {getFirstAndLastLatterOfName(GET_CASHE("name"))
+                    ? getFirstAndLastLatterOfName(GET_CASHE("name"))
+                    : "NA"}
+                </div>
               </li>
             </ul>
           </div>

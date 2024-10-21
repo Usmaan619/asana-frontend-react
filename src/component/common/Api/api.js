@@ -9,7 +9,9 @@ export const featctAllTicket = async () => {
       `${environment?.apiUrl}task/getAllTasks`
     );
     return response.data;
-  } catch (error) {}
+  } catch (error) {
+    throw error?.response;
+  }
 };
 
 export const fetchTicketData = async () => {
@@ -18,7 +20,9 @@ export const fetchTicketData = async () => {
       `${environment?.apiUrl}user/getAllUser`
     );
     return response?.data?.users;
-  } catch (error) {}
+  } catch (error) {
+    throw error?.response;
+  }
 };
 
 export const featchAllUser = async () => {
@@ -27,7 +31,9 @@ export const featchAllUser = async () => {
       `${environment?.apiUrl}user/getAllUser`
     );
     return response?.data?.users;
-  } catch (error) {}
+  } catch (error) {
+    throw error?.response;
+  }
 };
 
 export const updateTaskAPI = async (id, payload) => {
@@ -38,25 +44,31 @@ export const updateTaskAPI = async (id, payload) => {
     );
 
     return response?.data;
-  } catch (error) {}
+  } catch (error) {
+    throw error?.response;
+  }
 };
 
 export const createTaskAPI = async (payload) => {
   try {
     const token = GET_CASHE("token");
+    console.log("token: ", token);
     const response = await axios.post(
       `${environment?.apiUrl}task/create`,
+
+      payload,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: token,
+          Authorization: `${token}`,
         },
-      },
-      payload
+      }
     );
 
     return response?.data;
-  } catch (error) {}
+  } catch (error) {
+    throw error?.response;
+  }
 };
 
 export const loginAPI = async (payload) => {
@@ -64,7 +76,7 @@ export const loginAPI = async (payload) => {
     const response = await axios.post(`${environment?.apiUrl}login`, payload);
     return response?.data;
   } catch (error) {
-    return error;
+    throw error?.response;
   }
 };
 
@@ -76,7 +88,7 @@ export const signUpAPI = async (payload) => {
     );
     return response;
   } catch (error) {
-    return error;
+    throw error?.response;
   }
 };
 
@@ -88,7 +100,9 @@ export const createTaskDailyUpdateAPI = async (payload) => {
     );
 
     return response?.data;
-  } catch (error) {}
+  } catch (error) {
+    throw error?.response;
+  }
 };
 
 export const getAllDailyTaskUpdate = async () => {
@@ -97,7 +111,9 @@ export const getAllDailyTaskUpdate = async () => {
       `${environment?.apiUrl}task/getAllDailyTaskUpdate`
     );
     return response?.data?.tasks;
-  } catch (error) {}
+  } catch (error) {
+    throw error?.response;
+  }
 };
 
 export const getAllTasksCountAPI = async () => {
@@ -108,7 +124,7 @@ export const getAllTasksCountAPI = async () => {
 
     return response?.data;
   } catch (error) {
-    return error;
+    throw error?.response;
   }
 };
 
@@ -121,7 +137,7 @@ export const getTaskByStatusAndIdAPI = async (payload) => {
 
     return response?.data;
   } catch (error) {
-    return error;
+    throw error?.response;
   }
 };
 
@@ -132,6 +148,6 @@ export const getDailyTaskUpdateFilterAPI = async (startDate) => {
     );
     return response?.data;
   } catch (error) {
-    return error;
+    throw error?.response;
   }
 };

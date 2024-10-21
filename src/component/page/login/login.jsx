@@ -33,6 +33,7 @@ const Login = () => {
 
       if (response?.login) {
         SET_CASHE("token", response?.token);
+        SET_CASHE("name", response?.name);
         setUserLogin(response?.token);
         toastSuccess(response?.message);
         setIsLoading(false);
@@ -75,7 +76,7 @@ const Login = () => {
                     </div>
                     <div className="card-body">
                       <form onSubmit={handleSubmit} role="form">
-                        <label>Name</label>
+                        {/* <label>Name</label>
                         <div className="mb-3">
                           <input
                             type="text"
@@ -86,7 +87,7 @@ const Login = () => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                           />
-                        </div>
+                        </div> */}
                         <label>Email</label>
                         <div className="mb-3">
                           <input
@@ -119,12 +120,17 @@ const Login = () => {
                             checked={rememberMe}
                             onChange={() => setRememberMe(!rememberMe)}
                           />
-                          <label
-                            className="form-check-label"
-                            htmlFor="rememberMe"
-                          >
-                            Remember me
-                          </label>
+                          <div className="d-flex justify-content-between">
+                            <label
+                              className="form-check-label"
+                              htmlFor="rememberMe"
+                            >
+                              Remember me
+                            </label>
+                            <label className="form-check-label">
+                              Forgot password?
+                            </label>
+                          </div>
                         </div>
                         <div className="text-center">
                           <button

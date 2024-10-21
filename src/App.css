@@ -50,3 +50,22 @@ body {
 .fiexd-h {
   height: 600px;
 }
+
+.profile-dev {
+  border-radius: 57px;
+  height: 36px;
+  width: 36px;
+  /* background: black; */
+  color: white;
+  text-align: center;
+  padding: 4px;
+  box-shadow: chocolate;
+}
+
+.btn-close {
+  background: url("/src/assets/img/cross-icon.svg") center / 2em auto no-repeat !important;
+}
+
+.font-sm {
+  font-size: medium;
+}

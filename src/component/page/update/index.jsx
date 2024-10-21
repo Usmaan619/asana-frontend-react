@@ -67,6 +67,7 @@ const Update = () => {
       };
 
       const res = await createTaskDailyUpdateAPI(payload);
+      console.log("res:createTaskDailyUpdateAPI ", res);
       if (res?.success) {
         setIsLoading(false);
         dailyUpdate();
@@ -74,6 +75,8 @@ const Update = () => {
         reset();
       }
     } catch (error) {
+      console.log("error:createTaskDailyUpdateAPI ", error);
+      if (!error?.data?.success) toastError(error?.data?.message);
       setIsLoading(false);
     }
   };
@@ -117,7 +120,7 @@ const Update = () => {
 
   const resetTaskFilter = () => {
     setDailyTask(resetFilter);
-    setStartDate('');
+    setStartDate("");
   };
 
   return (
@@ -174,7 +177,7 @@ const Update = () => {
                                 Ticket No.
                               </th>
                               <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Assigned To
+                                Ticket Created By
                               </th>
                               <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                 About
@@ -297,24 +300,41 @@ const Update = () => {
               <textarea
                 className="form-control"
                 rows={3}
-                {...register("textarea")}
+                {...register("textarea", {
+                  required: "About is required",
+                })}
               />
+              {errors.textarea && (
+                <span className="text-danger">{errors.textarea.message}</span>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="date">Date</label>
               <input
                 type="date"
                 className="form-control"
-                {...register("date")}
+                {...register("date", {
+                  required: "Date is required",
+                })}
               />
+              {errors.date && (
+                <span className="text-danger">{errors.date.message}</span>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="description">Description</label>
               <textarea
                 className="form-control"
                 rows={3}
-                {...register("description")}
+                {...register("description", {
+                  required: "Description is required",
+                })}
               />
+              {errors.description && (
+                <span className="text-danger">
+                  {errors.description.message}
+                </span>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="collaborator">Collaborator</label>
