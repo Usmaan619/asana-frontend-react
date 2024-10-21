@@ -58,50 +58,23 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="asana-board container">
+      <div className="">
         <div className="row">
           {/* Open Tickets */}
           <div className="col-lg-3">
             <h5 className="text-uppercase text-secondary">Open</h5>
-            <Droppable droppableId="open">
-              {(provided) => (
-                <div
-                  className="task-column task-column-overflow overflow-auto fiexd-h "
-                  ref={provided?.innerRef}
-                  {...provided?.droppableProps}
-                >
-                  {getStatusTasks("open").length === 0 && (
-                    <div style={{ minHeight: "50px" }}>No tasks</div>
-                  )}
-                  {getStatusTasks("open").map((task, index) => (
-                    <TaskCard
-                      key={task._id}
-                      task={task}
-                      index={index}
-                      onClick={() => handleModal(task)}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-
-          {/* In-Progress Tickets */}
-          <div className="col-lg-3">
-            <h5 className="text-uppercase text-secondary">In-Progress</h5>
-            <Droppable droppableId="in-progress">
-              {(provided) => {
-                return (
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="open">
+                {(provided) => (
                   <div
-                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    className="task-column task-column-overflow overflow-auto fiexd-h "
                     ref={provided?.innerRef}
                     {...provided?.droppableProps}
                   >
-                    {getStatusTasks("in-progress").length === 0 && (
+                    {getStatusTasks("open").length === 0 && (
                       <div style={{ minHeight: "50px" }}>No tasks</div>
                     )}
-                    {getStatusTasks("in-progress").map((task, index) => (
+                    {getStatusTasks("open").map((task, index) => (
                       <TaskCard
                         key={task._id}
                         task={task}
@@ -111,63 +84,98 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
                     ))}
                     {provided.placeholder}
                   </div>
-                );
-              }}
-            </Droppable>
+                )}
+              </Droppable>
+            </div>
+          </div>
+
+          {/* In-Progress Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-secondary">In-Progress</h5>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="in-progress">
+                {(provided) => {
+                  return (
+                    <div
+                      className="task-column task-column-overflow overflow-auto fiexd-h"
+                      ref={provided?.innerRef}
+                      {...provided?.droppableProps}
+                    >
+                      {getStatusTasks("in-progress").length === 0 && (
+                        <div style={{ minHeight: "50px" }}>No tasks</div>
+                      )}
+                      {getStatusTasks("in-progress").map((task, index) => (
+                        <TaskCard
+                          key={task._id}
+                          task={task}
+                          index={index}
+                          onClick={() => handleModal(task)}
+                        />
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  );
+                }}
+              </Droppable>
+            </div>
           </div>
 
           {/* Completed Tickets */}
           <div className="col-lg-3">
             <h5 className="text-uppercase text-secondary">Completed</h5>
-            <Droppable droppableId="completed">
-              {(provided) => (
-                <div
-                  className="task-column task-column-overflow overflow-auto fiexd-h"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  {getStatusTasks("completed").length === 0 && (
-                    <div style={{ minHeight: "50px" }}>No tasks</div>
-                  )}
-                  {getStatusTasks("completed").map((task, index) => (
-                    <TaskCard
-                      key={task._id}
-                      task={task}
-                      index={index}
-                      onClick={() => handleModal(task)}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="completed">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {getStatusTasks("completed").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("completed").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
           </div>
 
           {/* Done Tickets */}
           <div className="col-lg-3">
             <h5 className="text-uppercase text-secondary">Done</h5>
-            <Droppable droppableId="done">
-              {(provided) => (
-                <div
-                  className="task-column task-column-overflow overflow-auto fiexd-h"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  {getStatusTasks("done").length === 0 && (
-                    <div style={{ minHeight: "50px" }}>No tasks</div>
-                  )}
-                  {getStatusTasks("done").map((task, index) => (
-                    <TaskCard
-                      key={task._id}
-                      task={task}
-                      index={index}
-                      onClick={() => handleModal(task)}
-                    />
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="done">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {getStatusTasks("done").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("done").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
           </div>
         </div>
       </div>

@@ -8,10 +8,15 @@ import { TailSpin } from "react-loader-spinner";
 import { CLEAR_CASHE } from "../../../utils/helper";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../Context/UserContext";
+import "quill/dist/quill.snow.css";
+import ReactQuill from "react-quill";
+import { quillFormats, quillModules } from "../../../constant/constant";
 
 const Navbar = ({ fetchTicket }) => {
   const { register, handleSubmit, setValue, reset } = useForm();
   const [isLoading, setIsLoading] = useState(false);
+  const [file, setFile] = useState(null);
+  const [description, setdescription] = useState();
 
   useEffect(() => {
     featchTicketData();
@@ -34,18 +39,22 @@ const Navbar = ({ fetchTicket }) => {
   const handleCloseModal = () => setShow(false);
 
   const onSubmit = async (data) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Append other fields to formData
+    formData.append("title", data?.title);
+    formData.append("assignedTo", data?.assignedTo);
+    formData.append("priority", data?.priority);
+    formData.append("status", data?.status);
+    formData.append("dueDate", data?.dueDate);
+    formData.append("description", description);
+    formData.append("collaborators", JSON.stringify(data?.collaborator)); // Stringify array or object if needed
+
     try {
-      setIsLoading(true);
-      const payload = {
-        title: data?.title,
-        assignedTo: data?.assignedTo,
-        priority: data?.priority,
-        status: data?.status,
-        dueDate: data?.dueDate,
-        description: data?.description,
-        collaborators: data?.collaborator,
-      };
-      const response = await createTaskAPI(payload);
+      setIsLoading(false);
+
+      const response = await createTaskAPI(formData);
       if (response?.success) {
         setIsLoading(false);
         toastSuccess(response?.message);
@@ -157,7 +166,17 @@ const Navbar = ({ fetchTicket }) => {
     }
   };
   const { setUserLogin, UserLogin } = useContext(UserContext);
-  console.log('UserLogin: ', UserLogin);
+
+  const handleProcedureContentChange = (content) => {
+    console.log("content----==========", content);
+    setdescription(content);
+  };
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+    console.log("event.target.files[0]: ", event.target.files[0]);
+  };
+
   return (
     <React.Fragment>
       {/* <!-- Navbar --> */}
@@ -264,19 +283,19 @@ const Navbar = ({ fetchTicket }) => {
                         />
                       </div>
 
-                      {/* Description Textarea */}
                       <div className="form-group">
-                        <label htmlFor="description">Description</label>
-                        <textarea
-                          className="form-control"
-                          id="description"
-                          rows="4"
-                          {...register("description")}
-                        />
+                        <ReactQuill
+                          theme="snow"
+                          modules={quillModules}
+                          formats={quillFormats}
+                          placeholder="write your content ...."
+                          onChange={handleProcedureContentChange}
+                          style={{ height: "220px" }}
+                        ></ReactQuill>
                       </div>
 
                       {/* Collaborator MultiSelect */}
-                      <div className="form-group">
+                      <div className="form-group mt-3">
                         <label htmlFor="collaborator">Collaborator</label>
                         <Multiselect
                           placeholder="Collaborator"
@@ -285,6 +304,14 @@ const Navbar = ({ fetchTicket }) => {
                           onSelect={onCollaboratorSelect}
                           onRemove={onCollaboratorRemove}
                           displayValue="name"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="file">Upload File:</label>
+                        <input
+                          type="file"
+                          {...register("file")}
+                          onChange={handleFileChange}
                         />
                       </div>
 

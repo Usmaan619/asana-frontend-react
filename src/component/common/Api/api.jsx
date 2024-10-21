@@ -1,6 +1,7 @@
 import axios from "axios";
 import { environment } from "../../../environment/environment";
 import axiosInstance from "../../../interceptors/axios.interceptor";
+import { GET_CASHE } from "../../../utils/helper";
 
 export const featctAllTicket = async () => {
   try {
@@ -42,8 +43,15 @@ export const updateTaskAPI = async (id, payload) => {
 
 export const createTaskAPI = async (payload) => {
   try {
-    const response = await axiosInstance.post(
+    const token = GET_CASHE("token");
+    const response = await axios.post(
       `${environment?.apiUrl}task/create`,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: token,
+        },
+      },
       payload
     );
 
