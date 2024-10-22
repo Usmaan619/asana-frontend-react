@@ -156,19 +156,19 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
           {/* Done Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-secondary">Done</h5>
+            <h5 className="text-uppercase text-secondary">Pending</h5>
             <div className=" fiexd-h overflow-y-auto">
-              <Droppable droppableId="done">
+              <Droppable droppableId="pending">
                 {(provided) => (
                   <div
                     className="task-column task-column-overflow overflow-auto fiexd-h"
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
-                    {getStatusTasks("done").length === 0 && (
+                    {getStatusTasks("pending").length === 0 && (
                       <div style={{ minHeight: "50px" }}>No tasks</div>
                     )}
-                    {getStatusTasks("done").map((task, index) => (
+                    {getStatusTasks("pending").map((task, index) => (
                       <TaskCard
                         key={task._id}
                         task={task}
