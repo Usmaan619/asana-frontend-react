@@ -383,7 +383,7 @@ const Dashboard = () => {
       percentageColor: "text-success",
     },
     {
-      title: "Panding Tasks",
+      title: "Pending Tasks",
       value: getAllTasksCount?.pandingTask,
       // percentage: "+3%",
       icon: "ni ni-world",
