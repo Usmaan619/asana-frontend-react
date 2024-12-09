@@ -34,7 +34,6 @@ const Navbar = ({ fetchTicket }) => {
   }, []);
 
   const [TaskData, setTaskData] = useState([]);
-  console.log("TaskData: ", TaskData);
 
   const featchTicketData = async () => {
     try {
@@ -83,8 +82,6 @@ const Navbar = ({ fetchTicket }) => {
     }
   };
 
-  const navigate = useNavigate();
-
   // multi option selector
   // States for each MultiSelect
   const [collaboratorSelect, setCollaboratorSelect] = useState([]);
@@ -123,13 +120,11 @@ const Navbar = ({ fetchTicket }) => {
   const { setUserLogin } = useContext(UserContext);
 
   const handleProcedureContentChange = (content) => {
-    console.log("content----==========", content);
     setdescription(content);
   };
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
-    console.log("event.target.files[0]: ", event.target.files[0]);
   };
 
   return (
@@ -305,7 +300,7 @@ const Navbar = ({ fetchTicket }) => {
             </div>
 
             <ul className="navbar-nav justify-content-end">
-              <li className="nav-item d-flex align-items-center">
+              {/* <li className="nav-item d-flex align-items-center">
                 <a
                   className="btn btn-outline-primary btn-sm mb-0 me-3"
                   onClick={() => {
@@ -316,7 +311,7 @@ const Navbar = ({ fetchTicket }) => {
                 >
                   logout
                 </a>
-              </li>
+              </li> */}
 
               {/* all user */}
               <li className="nav-item d-flex align-items-center">
