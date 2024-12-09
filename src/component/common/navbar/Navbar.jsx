@@ -15,6 +15,7 @@ import { UserContext } from "../../../Context/UserContext";
 import "quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import { quillFormats, quillModules } from "../../../constant/constant";
+import { Avatar, AvatarGroup } from "@mui/material";
 
 const Navbar = ({ fetchTicket }) => {
   const {
@@ -33,6 +34,7 @@ const Navbar = ({ fetchTicket }) => {
   }, []);
 
   const [TaskData, setTaskData] = useState([]);
+  console.log("TaskData: ", TaskData);
 
   const featchTicketData = async () => {
     try {
@@ -301,6 +303,7 @@ const Navbar = ({ fetchTicket }) => {
                 </Modal>
               </div>
             </div>
+
             <ul className="navbar-nav justify-content-end">
               <li className="nav-item d-flex align-items-center">
                 <a
@@ -315,12 +318,28 @@ const Navbar = ({ fetchTicket }) => {
                 </a>
               </li>
 
+              {/* all user */}
               <li className="nav-item d-flex align-items-center">
-                <div className="profile-dev bg-gradient-dark shadow mb-0 me-3 text-uppercase">
-                  {getFirstAndLastLatterOfName(GET_CASHE("name"))
-                    ? getFirstAndLastLatterOfName(GET_CASHE("name"))
-                    : "NA"}
-                </div>
+                <AvatarGroup max={5} spacing="medium">
+                  {TaskData?.map((n, idx) => (
+                    <Avatar sx={{ bgcolor: "#f48fb1" }} key={idx}>
+                      {getFirstAndLastLatterOfName(n?.name)
+                        ? getFirstAndLastLatterOfName(n?.name)
+                        : "NA"}
+                    </Avatar>
+                  ))}
+                </AvatarGroup>
+              </li>
+              {/* end all user */}
+
+              <li className="nav-item d-flex align-items-center">
+                <AvatarGroup max={1} spacing="medium">
+                  <Avatar sx={{ bgcolor: "#000" }}>
+                    {getFirstAndLastLatterOfName(GET_CASHE("name"))
+                      ? getFirstAndLastLatterOfName(GET_CASHE("name"))
+                      : "NA"}
+                  </Avatar>
+                </AvatarGroup>
               </li>
             </ul>
           </div>
@@ -328,6 +347,17 @@ const Navbar = ({ fetchTicket }) => {
       </nav>
       {/* <!-- End Navbar --> */}
     </React.Fragment>
+  );
+};
+
+const AvatarGroupExample = () => {
+  return (
+    <AvatarGroup max={4}>
+      <Avatar sx={{ bgcolor: "#f48fb1" }}>NL</Avatar>
+      <Avatar src="https://via.placeholder.com/40" alt="User" />
+      <Avatar sx={{ bgcolor: "#90caf9" }}>Aa</Avatar>
+      <Avatar sx={{ bgcolor: "#ce93d8" }}>AW</Avatar>
+    </AvatarGroup>
   );
 };
 

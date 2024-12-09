@@ -211,6 +211,7 @@ const Dashboard = () => {
 
   const [dropdownOpen, setDropdownOpen] = useState(false); // To toggle dropdown visibility
   const [selectedAssignee, setSelectedAssignee] = useState(""); // To store the selected value
+  const [selectedAssigneeDate, setSelectedAssigneeDate] = useState(); // To store the selected value
   const [selectedStatus, setSelectedStatus] = useState(""); // To store the selected value
   const dropdownRef = React.useRef(null); // Reference to the dropdown
   const buttonRef = React.useRef(null); // Reference to the toggle button
@@ -396,19 +397,18 @@ const Dashboard = () => {
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
   // Handle selection from dropdown
-  const handleSelectChangeAssignee = (e) => {
-    setSelectedAssignee(e.target.value);
-  };
+  const handleSelectChangeAssignee = (e) => setSelectedAssignee(e.target.value);
 
-  const handleSelectChangeStatus = (e) => {
-    setSelectedStatus(e.target.value);
-  };
+  const handleSelectChangeStatus = (e) => setSelectedStatus(e.target.value);
+
+  const handleSelectChangeDate = (e) => setSelectedAssigneeDate(e.target.value);
 
   const handleFilterTask = async () => {
     try {
       const payload = {
         assignedTo: selectedAssignee,
         status: selectedStatus,
+        createdAtDate: selectedAssigneeDate,
       };
 
       const res = await getTaskByStatusAndIdAPI(payload);
@@ -531,6 +531,17 @@ const Dashboard = () => {
                       <option value="testing">testing</option>
                       <option value="completed">completed</option>
                     </select>
+                  </div>
+
+                  <label htmlFor="assgineeDate">Created At</label>
+                  <div className="d-flex justify-content-between">
+                    <input
+                      type="date"
+                      className="form-control"
+                      placeholder="DD-MM-YY"
+                      value={selectedAssigneeDate}
+                      onChange={handleSelectChangeDate}
+                    />
                   </div>
                   <div className="d-flex justify-content-between">
                     <button

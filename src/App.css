@@ -69,3 +69,11 @@ body {
 .font-sm {
   font-size: medium;
 }
+
+.start-date-input {
+  height: 43px;
+}
+
+.start-date-constainer {
+  margin-bottom: 43px;
+}

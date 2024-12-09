@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom"; // Import Link for client-side navigation
-import Logo from "../../../assets/img/logo-ct-dark.png";
+import Logo from "../../../assets/logo/siw-logo.svg";
 import { HiHome } from "react-icons/hi";
 
 const Sidebar = () => {
@@ -44,7 +44,7 @@ const Sidebar = () => {
         ></i>
         <Link to="/" className="navbar-brand m-0">
           <img src={Logo} className="navbar-brand-img h-100" alt="main_logo" />
-          <span className="ms-1 font-weight-bold">ASANA LITE Dashboard</span>
+          <span className="ms-1 font-weight-bold">SIW Management</span>
         </Link>
       </div>
       <hr className="horizontal dark mt-0" />

@@ -49,6 +49,31 @@ export const updateTaskAPI = async (id, payload) => {
   }
 };
 
+export const DeleteDailyTaskAPI = async (id) => {
+  try {
+    const response = await axiosInstance.delete(
+      `${environment?.apiUrl}task/DeleteTaskDailyUpdate/${id}`
+    );
+
+    return response?.data;
+  } catch (error) {
+    throw error?.response;
+  }
+};
+
+export const UpdateTaskDailyUpdateAPI = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `${environment?.apiUrl}task/UpdateTaskDailyUpdate`,
+      payload
+    );
+
+    return response?.data;
+  } catch (error) {
+    throw error?.response;
+  }
+};
+
 export const createTaskAPI = async (payload) => {
   try {
     const token = GET_CASHE("token");
@@ -92,10 +117,22 @@ export const signUpAPI = async (payload) => {
   }
 };
 
-export const forgotPasswordAPI = async (payload) => {
+export const resetPasswordAPI = async (payload) => {
   try {
     const response = await axios.post(
       `${environment?.apiUrl}user/reset-password`,
+      payload
+    );
+    return response?.data;
+  } catch (error) {
+    throw error?.response;
+  }
+};
+
+export const SendOTPMailAPI = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${environment?.apiUrl}user/send-otp`,
       payload
     );
     return response?.data;

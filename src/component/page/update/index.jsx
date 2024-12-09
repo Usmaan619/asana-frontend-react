@@ -9,12 +9,14 @@ import { CARDDATA } from "../../../constant/constant";
 import { TailSpin } from "react-loader-spinner";
 import {
   createTaskDailyUpdateAPI,
+  DeleteDailyTaskAPI,
   fetchTicketData,
   getAllDailyTaskUpdate,
   getDailyTaskUpdateFilterAPI,
+  UpdateTaskDailyUpdateAPI,
 } from "../../common/Api/api";
 import moment from "moment";
-import { toastError } from "../../../servers/toastr.service";
+import { toastError, toastSuccess } from "../../../servers/toastr.service";
 
 const Update = () => {
   const [show, setShow] = useState(false);
@@ -25,6 +27,7 @@ const Update = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -50,24 +53,67 @@ const Update = () => {
   const [TaskData, setTaskData] = useState([]);
   const [dailyTask, setDailyTask] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [type, setType] = useState();
+
   const itemsPerPage = 10;
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  // const onSubmit = async (data) => {
+  //   try {
+  //     setIsLoading(true);
+
+  //     console.log("type: ", type);
+  //     if (type === "edit") {
+  //     }
+  //     const payload = {
+  //       ticketNo: data?.taskNumber,
+  //       about: data?.textarea,
+  //       date: data?.date,
+  //       description: data?.description,
+  //       tags: collaboratorSelect,
+  //     };
+
+  //     const res = await createTaskDailyUpdateAPI(payload);
+  //     console.log("res:createTaskDailyUpdateAPI ", res);
+  //     if (res?.success) {
+  //       setIsLoading(false);
+  //       dailyUpdate();
+  //       handleClose();
+  //       reset();
+  //     }
+  //   } catch (error) {
+  //     console.log("error:createTaskDailyUpdateAPI ", error);
+  //     if (!error?.data?.success) toastError(error?.data?.message);
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
+
+      console.log("type: ", type);
+
       const payload = {
         ticketNo: data?.taskNumber,
         about: data?.textarea,
         date: data?.date,
         description: data?.description,
         tags: collaboratorSelect,
+        taskId: type?.taskId,
       };
 
-      const res = await createTaskDailyUpdateAPI(payload);
-      console.log("res:createTaskDailyUpdateAPI ", res);
+      let res;
+      if (type?.type === "edit") {
+        // Call the edit API
+        res = await UpdateTaskDailyUpdateAPI(payload);
+      } else {
+        // Call the create API
+        res = await createTaskDailyUpdateAPI(payload);
+      }
+
       if (res?.success) {
         setIsLoading(false);
         dailyUpdate();
@@ -75,7 +121,7 @@ const Update = () => {
         reset();
       }
     } catch (error) {
-      console.log("error:createTaskDailyUpdateAPI ", error);
+      console.log("error: ", error);
       if (!error?.data?.success) toastError(error?.data?.message);
       setIsLoading(false);
     }
@@ -123,6 +169,39 @@ const Update = () => {
     setStartDate("");
   };
 
+  const onDeleteTaskUpdate = async (t) => {
+    try {
+      const res = await DeleteDailyTaskAPI(t?._id);
+
+      if (res?.success) {
+        toastSuccess(res?.message);
+        await dailyUpdate();
+      }
+    } catch (error) {
+      if (!error?.data?.success) toastError(error?.data?.message);
+      console.log("error:DeleteDailyTaskAPI ", error);
+    }
+  };
+
+  console.log("type: ", type);
+  const onEditTaskUpdate = (t, type) => {
+    setType({ type, taskId: t?._id });
+    console.log("t: ", t);
+    populateData(t);
+    handleShow();
+  };
+
+  const populateData = (d) => {
+    setValue("taskNumber", d?.ticketNo);
+    setValue("textarea", d?.about);
+
+    setValue(
+      "date",
+      d?.date ? new Date(d?.date).toISOString().split("T")[0] : ""
+    );
+    setValue("description", d?.description);
+    setCollaboratorSelect(d?.tags);
+  };
   return (
     <>
       <Sidebar></Sidebar>
@@ -130,31 +209,41 @@ const Update = () => {
         <Navbar />
         <div className="container-fluid py-4">
           <div className="row">
-            <div class="container-fluid py-4 ">
-              <div className="d-flex  justify-content-between">
-                <Button variant="primary" onClick={handleShow} className="my-3">
+            <div className="container-fluid py-4 ">
+              <div className="d-flex justify-content-between align-items-center">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    handleShow();
+                    reset();
+                    setCollaboratorSelect([]);
+                    setType("");
+                  }}
+                  className="my-3"
+                >
                   Update
                 </Button>
-                <div className="d-flex gap-4">
-                  <div className="">
-                    <label htmlFor="startDate">Start Date</label>
+                <div className="d-flex gap-4 align-items-center">
+                  <div className="d-flex flex-column start-date-constainer">
+                    <label htmlFor="startDate" className="">
+                      Start Date
+                    </label>
                     <input
                       type="date"
                       id="startDate"
-                      className="form-control mb-2"
+                      className="form-control"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
                     />
                   </div>
-
                   <button
-                    className={`btn btn-primary my-3`}
+                    className="btn btn-primary"
                     onClick={handleFilterTask}
                   >
                     Filter
                   </button>
                   <button
-                    className={`btn btn-primary my-3`}
+                    className="btn btn-secondary"
                     onClick={resetTaskFilter}
                   >
                     Reset
@@ -162,48 +251,51 @@ const Update = () => {
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-12">
-                  <div class="card mb-4">
-                    <div class="card-header pb-0">
+              <div className="row">
+                <div className="col-12">
+                  <div className="card mb-4">
+                    <div className="card-header pb-0">
                       <h6>Report table</h6>
                     </div>
-                    <div class="card-body px-0 pt-0 pb-2">
-                      <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-0">
+                    <div className="card-body px-0 pt-0 pb-2">
+                      <div className="table-responsive p-0">
+                        <table className="table align-items-center mb-0">
                           <thead>
                             <tr>
-                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Ticket No.
                               </th>
-                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Ticket Created By
                               </th>
-                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                 About
                               </th>
-                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Date
                               </th>
-                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Description
                               </th>
-                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Tags
                               </th>
-                              <th class="text-secondary opacity-7"></th>
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Action
+                              </th>
+                              <th className="text-secondary opacity-7"></th>
                             </tr>
                           </thead>
                           {currentItems?.map((link, index) => (
                             <tbody key={index}>
                               <tr>
                                 <td>
-                                  <h6 class="font-weight-bold ms-4">
+                                  <h6 className="font-weight-bold ms-4">
                                     {link?.ticketNo ? link?.ticketNo : "NA"}
                                   </h6>
                                 </td>
                                 <td>
-                                  <span class="text-light bg-gradient-primary mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold">
+                                  <span className="text-light bg-gradient-primary mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold">
                                     {link?.assignedTo?.name
                                       ? link?.assignedTo?.name
                                       : "NA"}
@@ -211,31 +303,58 @@ const Update = () => {
                                 </td>
 
                                 <td>
-                                  <p class="text-xs font-weight-bold mb-0">
+                                  <p className="text-xs font-weight-bold mb-0">
                                     {link?.about ? link?.about : "NA"}
                                   </p>
                                 </td>
-                                <td class="align-middle text-center text-sm">
+                                <td className="align-middle text-center text-sm">
                                   {moment(link.date).format("DD MM YYYY")
                                     ? moment(link.date).format("DD MM YYYY")
                                     : "NA"}
                                 </td>
-                                <td class="align-middle text-center">
-                                  <span class="text-xs font-weight-bold">
+                                <td className="align-middle text-center">
+                                  <span className="text-xs font-weight-bold">
                                     {link?.description
                                       ? link?.description
                                       : "NA"}
                                   </span>
                                 </td>
-                                <td class="align-middle text-center">
+                                <td className="align-middle text-center">
                                   {link?.tags?.map((item, index) => (
                                     <span
-                                      class="text-light bg-gradient-success mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold"
+                                      className="text-light bg-gradient-success mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold"
                                       key={index}
                                     >
                                       {item.name ? item.name : "NA"}
                                     </span>
                                   ))}
+                                </td>
+
+                                <td>
+                                  {/*  */}
+                                  <div className="ms-auto text-end">
+                                    <a
+                                      onClick={() => {
+                                        onDeleteTaskUpdate(link);
+                                      }}
+                                      className="btn btn-link text-danger text-gradient px-3 mb-0"
+                                    >
+                                      <i className="far fa-trash-alt me-2"></i>
+                                      Delete
+                                    </a>
+                                    <a
+                                      onClick={() => {
+                                        onEditTaskUpdate(link, "edit");
+                                      }}
+                                      className="btn btn-link text-dark px-3 mb-0"
+                                    >
+                                      <i
+                                        className="fas fa-pencil-alt text-dark me-2"
+                                        aria-hidden="true"
+                                      ></i>
+                                      Edit
+                                    </a>
+                                  </div>
                                 </td>
                               </tr>
                             </tbody>
@@ -249,7 +368,6 @@ const Update = () => {
                           <li key={number} className="page-item mx-1">
                             <a
                               onClick={() => paginate(number)}
-                              href="#!"
                               className="page-link"
                             >
                               {number}

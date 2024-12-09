@@ -1,12 +1,53 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { forgotPasswordAPI, loginAPI } from "../../common/Api/api";
+import {
+  loginAPI,
+  resetPasswordAPI,
+  SendOTPMailAPI,
+} from "../../common/Api/api";
 import { SET_CASHE } from "../../../utils/helper";
 import { UserContext } from "../../../Context/UserContext";
 import { toastError, toastSuccess } from "../../../servers/toastr.service";
 import { TailSpin } from "react-loader-spinner";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
+const resetPasswordValidationSchema = yup.object().shape({
+  otp: yup
+    .string()
+    .required("OTP is required")
+    .matches(/^\d{4}$/, "OTP must be a 4-digit number"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters long")
+    .matches(/[a-z]/, "Password must include at least one lowercase letter")
+    .matches(/[A-Z]/, "Password must include at least one uppercase letter")
+    .matches(/\d/, "Password must include at least one number")
+    .matches(
+      /[!@#$%^&*()\-_"=+{}; :,<.>]/,
+      "Password must include at least one special character"
+    ),
+  confirmPassword: yup
+    .string()
+    .required("Confirm password is required")
+    .oneOf([yup.ref("password")], "Passwords must match"),
+  // agree: yup.boolean().oneOf([true], "You must agree to the Privacy Policy"),
+});
+
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .trim() // Removes unnecessary spaces
+    .email("Enter a valid email address (e.g., user@example.com)") // Example format for clarity
+    .matches(
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      "Email must be in a proper format and not contain spaces"
+    ) // Ensures no spaces or invalid characters
+    .required("Email is required"),
+  agree: yup.boolean().oneOf([true], "You must agree to the Privacy Policy"),
+});
 const Login = () => {
   const navigate = useNavigate();
   const {
@@ -18,12 +59,25 @@ const Login = () => {
     register: registerForgot,
     handleSubmit: handleForgotSubmit,
     formState: { errors: forgotErrors },
-  } = useForm();
+  } = useForm({ resolver: yupResolver(schema) });
+
+  const {
+    register: resetPasswordRegister,
+    handleSubmit: handleResetPasswordSubmit,
+    formState: { errors: resetPasswordError },
+  } = useForm({ resolver: yupResolver(resetPasswordValidationSchema) });
 
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // login
+  const [isLoginPassword, setIsLoginPassword] = useState(true);
+  // forgot
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  // reset
+  const [isResetPassword, setIsResetPassword] = useState(false);
+
   const { setUserLogin } = useContext(UserContext);
+  console.log("isForgotPassword: ", isForgotPassword);
 
   // Handle login form submission
   const onSubmit = async (data) => {
@@ -50,7 +104,7 @@ const Login = () => {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      toastError("An error occurred during login.");
+      toastError(error?.data?.message);
     }
   };
   // Handle forgot password form submission
@@ -58,16 +112,36 @@ const Login = () => {
     try {
       setIsLoading(true);
 
-      const payload = {
-        email: data.email,
-        newPassword: data.newPassword,
-      };
-
-      const response = await forgotPasswordAPI(payload);
+      const response = await SendOTPMailAPI({ email: data.email });
 
       if (response?.success) {
-        toastSuccess("Password has been reset successfully");
+        toastSuccess(response?.message);
+        setIsLoginPassword(false);
         setIsForgotPassword(false);
+        setIsResetPassword(true);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      toastError(error?.data?.message);
+    }
+  };
+
+  // Handle forgotpassword form submission
+  const onResetPasswordSubmit = async (data) => {
+    try {
+      setIsLoading(true);
+
+      const response = await resetPasswordAPI({
+        otp: Number(data?.otp),
+        password: data?.password,
+      });
+
+      if (response?.success) {
+        toastSuccess(response?.message);
+        setIsLoginPassword(true);
+        setIsForgotPassword(false);
+        setIsResetPassword(false);
       }
       setIsLoading(false);
     } catch (error) {
@@ -86,90 +160,114 @@ const Login = () => {
                 <div className="card card-plain mt-8">
                   <div className="card-header pb-0 text-left bg-transparent">
                     <h3 className="font-weight-bolder text-info text-gradient">
-                      {isForgotPassword
-                        ? "Reset your password"
-                        : "Welcome back"}
+                      {isForgotPassword && "Forgot your password"}
+                      {isLoginPassword && "Welcome back"}
+                      {isResetPassword && "Reset your password"}
                     </h3>
                     <p className="mb-0">
-                      {isForgotPassword
-                        ? "Enter your email and new password to reset"
-                        : "Enter your email and password to sign in"}
+                      {isForgotPassword && "Enter your email"}
+                      {isLoginPassword &&
+                        "Enter your email and password to sign in"}
+                      {isResetPassword &&
+                        "Enter your email and new password to reset"}
                     </p>
                   </div>
                   <div className="card-body">
-                    {!isForgotPassword ? (
-                      <form onSubmit={handleSubmit(onSubmit)} role="form">
-                        <label>Email</label>
-                        <div className="mb-3">
-                          <input
-                            type="email"
-                            className="form-control"
-                            placeholder="Email"
-                            {...register("email", {
-                              required: "Email is required",
-                            })}
-                          />
-                          {errors.email && (
-                            <p className="text-danger">
-                              {errors.email.message}
-                            </p>
-                          )}
-                        </div>
-                        <label>Password</label>
-                        <div className="mb-3">
-                          <input
-                            type="password"
-                            className="form-control"
-                            placeholder="Password"
-                            {...register("password", {
-                              required: "Password is required",
-                            })}
-                          />
-                          {errors.password && (
-                            <p className="text-danger">
-                              {errors.password.message}
-                            </p>
-                          )}
-                        </div>
-                        <div className="form-check form-switch">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="rememberMe"
-                            checked={rememberMe}
-                            onChange={() => setRememberMe(!rememberMe)}
-                          />
-                          <div className="d-flex justify-content-between">
-                            <label
-                              className="form-check-label"
-                              htmlFor="rememberMe"
-                            >
-                              Remember me
-                            </label>
-                            <label
-                              className="form-check-label"
-                              onClick={() => setIsForgotPassword(true)}
-                              style={{ cursor: "pointer", color: "#007bff" }}
-                            >
-                              Forgot password?
-                            </label>
-                          </div>
-                        </div>
-                        <div className="text-center">
-                          <button
-                            type="submit"
-                            className="btn bg-gradient-dark w-100 my-4 mb-2"
-                            disabled={isLoading}
-                          >
-                            {isLoading ? (
-                              <TailSpin color="#fff" height={20} width={20} />
-                            ) : (
-                              "Sign in"
+                    {/* login */}
+                    {isLoginPassword && (
+                      <>
+                        <form onSubmit={handleSubmit(onSubmit)} role="form">
+                          <label>Email</label>
+                          <div className="mb-3">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="example@mail.com"
+                              {...register("email", {
+                                required: "Email is required",
+                              })}
+                            />
+                            {errors.email && (
+                              <p className="text-danger">
+                                {errors.email.message}
+                              </p>
                             )}
-                          </button>
+                          </div>
+                          <label>Password</label>
+                          <div className="mb-3">
+                            <input
+                              type="password"
+                              className="form-control"
+                              placeholder="Password"
+                              {...register("password", {
+                                required: "Password is required",
+                              })}
+                            />
+                            {errors.password && (
+                              <p className="text-danger">
+                                {errors.password.message}
+                              </p>
+                            )}
+                          </div>
+                          <div className="form-check form-switch">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="rememberMe"
+                              checked={rememberMe}
+                              onChange={() => setRememberMe(!rememberMe)}
+                            />
+                            <div className="d-flex justify-content-between">
+                              <label
+                                className="form-check-label"
+                                htmlFor="rememberMe"
+                              >
+                                Remember me
+                              </label>
+                              <label
+                                className="form-check-label"
+                                onClick={() => {
+                                  setIsLoginPassword(false);
+                                  setIsForgotPassword(true);
+                                }}
+                                style={{ cursor: "pointer", color: "#007bff" }}
+                              >
+                                Forgot password?
+                              </label>
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <button
+                              type="submit"
+                              className="btn bg-gradient-dark w-100 my-4 mb-2"
+                              disabled={isLoading}
+                            >
+                              {isLoading ? (
+                                <TailSpin color="#fff" height={20} width={20} />
+                              ) : (
+                                "Sign in"
+                              )}
+                            </button>
+                          </div>
+                        </form>
+
+                        <div className="card-footer text-center pt-0 px-lg-2 px-1">
+                          {!isForgotPassword && (
+                            <p className="mb-4 text-sm mx-auto">
+                              Don't have an account?
+                              <Link
+                                to="/signup"
+                                className="text-info text-gradient font-weight-bold"
+                              >
+                                Sign up
+                              </Link>
+                            </p>
+                          )}
                         </div>
-                      </form>
-                    ) : (
+                      </>
+                    )}
+                    {/* forgot */}
+                    {isForgotPassword && (
                       <form
                         onSubmit={handleForgotSubmit(onForgotPasswordSubmit)}
                         role="form"
@@ -190,22 +288,7 @@ const Login = () => {
                             </p>
                           )}
                         </div>
-                        <label>New Password</label>
-                        <div className="mb-3">
-                          <input
-                            type="password"
-                            className="form-control"
-                            placeholder="New Password"
-                            {...registerForgot("newPassword", {
-                              required: "New Password is required",
-                            })}
-                          />
-                          {forgotErrors.newPassword && (
-                            <p className="text-danger">
-                              {forgotErrors.newPassword.message}
-                            </p>
-                          )}
-                        </div>
+
                         <div className="text-center">
                           <button
                             type="submit"
@@ -215,14 +298,17 @@ const Login = () => {
                             {isLoading ? (
                               <TailSpin color="#fff" height={20} width={20} />
                             ) : (
-                              "Reset Password"
+                              "Submit"
                             )}
                           </button>
                         </div>
                         <div className="text-center">
                           <label
                             className="form-check-label"
-                            onClick={() => setIsForgotPassword(false)}
+                            onClick={() => {
+                              setIsLoginPassword(true);
+                              setIsForgotPassword(false);
+                            }}
                             style={{ cursor: "pointer", color: "#007bff" }}
                           >
                             Back to Sign in
@@ -230,18 +316,77 @@ const Login = () => {
                         </div>
                       </form>
                     )}
-                  </div>
-                  <div className="card-footer text-center pt-0 px-lg-2 px-1">
-                    {!isForgotPassword && (
-                      <p className="mb-4 text-sm mx-auto">
-                        Don't have an account?
-                        <Link
-                          to="/signup"
-                          className="text-info text-gradient font-weight-bold"
-                        >
-                          Sign up
-                        </Link>
-                      </p>
+                    {/* reset */}
+                    {isResetPassword && (
+                      <form
+                        onSubmit={handleResetPasswordSubmit(
+                          onResetPasswordSubmit
+                        )}
+                        role="form"
+                      >
+                        <label>OTP</label>
+                        <div className="mb-3">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="otp"
+                            {...resetPasswordRegister("otp", {
+                              required: "otp is required",
+                            })}
+                          />
+                          {resetPasswordError.otp && (
+                            <p className="text-danger">
+                              {resetPasswordError.otp.message}
+                            </p>
+                          )}
+                        </div>
+                        <label>Password</label>
+                        <div className="mb-3">
+                          <input
+                            type="password"
+                            className="form-control"
+                            placeholder="New Password"
+                            {...resetPasswordRegister("password", {
+                              required: "Password is required",
+                            })}
+                          />
+                          {resetPasswordError.password && (
+                            <p className="text-danger">
+                              {resetPasswordError.password.message}
+                            </p>
+                          )}
+                        </div>
+                        <label>Confirm Password</label>
+                        <div className="mb-3">
+                          <input
+                            type="password"
+                            className="form-control"
+                            placeholder="New Password"
+                            {...resetPasswordRegister("confirmPassword", {
+                              required: "Password is required",
+                            })}
+                          />
+                          {resetPasswordError.confirmPassword && (
+                            <p className="text-danger">
+                              {resetPasswordError.confirmPassword.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="form-check form-switch"></div>
+                        <div className="text-center">
+                          <button
+                            type="submit"
+                            className="btn bg-gradient-dark w-100 my-4 mb-2"
+                            disabled={isLoading}
+                          >
+                            {isLoading ? (
+                              <TailSpin color="#fff" height={20} width={20} />
+                            ) : (
+                              "Sign in"
+                            )}
+                          </button>
+                        </div>
+                      </form>
                     )}
                   </div>
                 </div>

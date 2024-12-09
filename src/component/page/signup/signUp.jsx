@@ -28,12 +28,9 @@ const Signup = () => {
         setIsLoading(false);
       }
 
-      if (response?.response?.data?.message) {
-        toastError(response.response.data.message);
-        setIsLoading(false);
-      }
+      if (!response?.data?.success) setIsLoading(false);
     } catch (error) {
-      // setErrorMessage("Signup failed. Please try again.");
+      if (!error?.data?.success) toastError(error?.data?.message);
       setIsLoading(false);
     }
   };
@@ -149,11 +146,8 @@ const Signup = () => {
                     )}
                     <p className="text-sm mt-3 mb-0">
                       Already have an account?{" "}
-                      <Link
-                        to="/"
-                        className="text-dark font-weight-bolder"
-                      >
-                        Sign up
+                      <Link to="/" className="text-dark font-weight-bolder">
+                        Sign in
                       </Link>
                     </p>
                   </div>
