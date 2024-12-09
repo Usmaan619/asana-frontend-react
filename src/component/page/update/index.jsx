@@ -394,6 +394,7 @@ const Update = () => {
               <label htmlFor="taskNumber">Task Number</label>
               <input
                 type="text"
+                disabled={type?.type === "edit"}
                 className={`form-control ${
                   errors.taskNumber ? "is-invalid" : ""
                 }`}
