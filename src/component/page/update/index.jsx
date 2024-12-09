@@ -17,6 +17,7 @@ import {
 } from "../../common/Api/api";
 import moment from "moment";
 import { toastError, toastSuccess } from "../../../servers/toastr.service";
+import Notifications from "../notification/notification";
 
 const Update = () => {
   const [show, setShow] = useState(false);
@@ -221,7 +222,7 @@ const Update = () => {
                   }}
                   className="my-3"
                 >
-                  Update
+                  My Task
                 </Button>
                 <div className="d-flex gap-4 align-items-center">
                   <div className="d-flex flex-column start-date-constainer">

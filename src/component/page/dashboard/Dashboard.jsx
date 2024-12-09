@@ -16,7 +16,10 @@ import { toastError, toastSuccess } from "../../../servers/toastr.service";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import ReactQuill from "react-quill";
 import { quillFormats, quillModules } from "../../../constant/constant";
-import { getFirstAndLastLatterOfName } from "../../../utils/helper";
+import {
+  getFirstAndLastLatterOfName,
+  NOTIFICATION,
+} from "../../../utils/helper";
 
 // Task Card Component
 const TaskCard = ({ task, index, onClick }) => {
@@ -228,6 +231,18 @@ const Dashboard = () => {
     setTaskData(user);
   };
 
+  useEffect(() => {
+    const intervalCall = setInterval(() => {
+      getTask();
+    }, 10000);
+
+    return () => {
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  const getTask = async () => await featctAllTicket();
+
   const handleCloseModal = () => setShow(false);
 
   const onDragEnd = async (result) => {
@@ -344,16 +359,28 @@ const Dashboard = () => {
   };
 
   const [getAllTasksCount, setGetAllTasksCount] = useState();
+  console.log("getAllTasksCount: ", getAllTasksCount);
 
   React.useEffect(() => {
-    new Promise(async (resolve, reject) => {
-      await statusCount();
-      resolve(1);
-    });
+    // new Promise(async (resolve, reject) => {
+    //   // await statusCount();
+    //   resolve(1);
+    // });
+    statusCount();
+
+    const intervalCall = setInterval(() => {
+      statusCount();
+    }, 10000);
+
+    return () => {
+      clearInterval(intervalCall);
+    };
   }, []);
 
   const statusCount = async () => {
     const res = await getAllTasksCountAPI();
+    // NOTIFICATION = res?.totalNotifications;
+    // console.log('NOTIFICATION: ', NOTIFICATION);
 
     setGetAllTasksCount(res);
   };
@@ -446,7 +473,7 @@ const Dashboard = () => {
 
   return (
     <React.Fragment>
-      <Sidebar />
+      <Sidebar NOTIFICATION={getAllTasksCount} />
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar fetchTicket={fetchTicket} />
         <div className="container-fluid py-4">

@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import Link for client-side navigation
 import Logo from "../../../assets/logo/siw-logo.svg";
-import { HiHome } from "react-icons/hi";
+import { HiChat, HiClipboardList, HiHome } from "react-icons/hi";
 import { CLEAR_CASHE } from "../../../utils/helper";
 import { UserContext } from "../../../Context/UserContext";
 
-const Sidebar = () => {
+const Sidebar = ({ NOTIFICATION }) => {
+  console.log("NOTIFICATION: ", NOTIFICATION);
   const navigate = useNavigate();
 
   const { setUserLogin } = useContext(UserContext);
@@ -25,9 +26,17 @@ const Sidebar = () => {
     // },
     {
       path: "/update",
-      icon: <HiHome />,
+      icon: <HiClipboardList />,
       label: "Update",
       isActive: window?.location?.pathname === "/update" ? true : false,
+    },
+
+    {
+      path: "/notification",
+      icon: <HiChat />,
+      label: "Notification",
+      count: NOTIFICATION?.totalNotifications,
+      isActive: window?.location?.pathname === "/notification" ? true : false,
     },
     // {
     //   // path: "/virtual-reality",
@@ -48,7 +57,7 @@ const Sidebar = () => {
           aria-hidden="true"
           id="iconSidenav"
         ></i>
-        <Link to="/" className="navbar-brand m-0">
+        <Link className="navbar-brand m-0">
           <img src={Logo} className="navbar-brand-img h-100" alt="main_logo" />
           <span className="ms-1 font-weight-bold">SIW Management</span>
         </Link>
@@ -60,7 +69,7 @@ const Sidebar = () => {
           id="sidenav-collapse-main"
         >
           <ul className="navbar-nav">
-            {navItems.map((item, index) => (
+            {navItems?.map((item, index) => (
               <li key={index} className="nav-item">
                 <Link
                   className={`nav-link ${item.isActive ? "active" : ""}`}
@@ -70,6 +79,11 @@ const Sidebar = () => {
                     {item.icon}
                   </div>
                   <span className="nav-link-text ms-1">{item.label}</span>
+                  {item.count && (
+                    <div className="rounded-circle bg-purple px-1 border border-1 border-dark mb-3">
+                      {item.count}
+                    </div>
+                  )}
                 </Link>
               </li>
             ))}

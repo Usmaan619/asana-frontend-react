@@ -200,3 +200,25 @@ export const getDailyTaskUpdateFilterAPI = async (startDate) => {
     throw error?.response;
   }
 };
+
+export const getAllNotificationsAPI = async (
+  isRead = false,
+  limit = 10,
+  offset = 0
+) => {
+  try {
+    const response = await axiosInstance.get(
+      `${environment?.apiUrl}task/getAllNotifications`,
+      {
+        params: {
+          isRead,
+          limit,
+          offset,
+        },
+      }
+    );
+    return response?.data;
+  } catch (error) {
+    throw error?.response || error;
+  }
+};

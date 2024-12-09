@@ -8,6 +8,8 @@ import { UserContext } from "../Context/UserContext";
 import { GET_CASHE } from "../utils/helper";
 import Sidebar from "../component/common/sidebar/Sidebar";
 import Update from "../component/page/update";
+import socket from "../socket/socket";
+import Notifications from "../component/page/notification/notification";
 
 function AuthRoutes() {
   const { setUserLogin, UserLogin } = useContext(UserContext);
@@ -16,6 +18,15 @@ function AuthRoutes() {
 
     setUserLogin(getvalue);
   }, [UserLogin]);
+
+  // useEffect(() => {
+  //   const userId = localStorage.getItem("userId"); // Assuming userId is stored locally
+  //   socket.emit("joinUserRoom", userId);
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   return (
     <>
@@ -31,6 +42,7 @@ function AuthRoutes() {
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/signup" element={<Navigate to="/" />} />
             <Route path="/update" element={<Update />} />
+            <Route path="/notification" element={<Notifications />} />
           </>
         )}
         <Route path="*" element={<Login />} />

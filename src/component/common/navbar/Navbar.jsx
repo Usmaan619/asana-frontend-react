@@ -41,6 +41,7 @@ const Navbar = ({ fetchTicket }) => {
       if (res) setTaskData(res);
     } catch (error) {}
   };
+
   const getTask = async () => await featctAllTicket();
 
   const [show, setShow] = useState(false);
