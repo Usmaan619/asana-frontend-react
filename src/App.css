@@ -79,5 +79,11 @@ body {
 }
 
 .bg-purple {
-  color: #cb0c9f;
+  background: #cb0c9f;
+  color: #fff;
+  
+}
+
+.s {
+  overflow-x: auto;
 }

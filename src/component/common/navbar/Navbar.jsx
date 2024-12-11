@@ -3,7 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import { useForm } from "react-hook-form";
 import Multiselect from "multiselect-react-dropdown";
 import { createTaskAPI, featchAllUser, featctAllTicket } from "../Api/api";
-import { toastSuccess } from "../../../servers/toastr.service";
+import { toastError, toastSuccess } from "../../../servers/toastr.service";
 import { TailSpin } from "react-loader-spinner";
 import {
   CLEAR_CASHE,
@@ -52,6 +52,9 @@ const Navbar = ({ fetchTicket }) => {
 
   const onSubmit = async (data) => {
     try {
+      if (!data.collaborator || !data.collaborator.length)
+        return toastError("At least one collaborator must be selected.");
+
       // Append other fields to formData
       const formData = new FormData();
       formData.append("file", file);
@@ -194,7 +197,7 @@ const Navbar = ({ fetchTicket }) => {
                           })}
                         >
                           <option value="">Choose...</option>
-                          {TaskData.map((option, index) => (
+                          {TaskData?.map((option, index) => (
                             <option key={index} value={option?._id}>
                               {option?.name}
                             </option>
@@ -213,12 +216,19 @@ const Navbar = ({ fetchTicket }) => {
                         <select
                           className="form-control"
                           id="priority"
-                          {...register("priority")}
+                          {...register("priority", {
+                            required: "Priority is required",
+                          })}
                         >
                           <option value="medium">medium</option>
                           <option value="low">low</option>
                           <option value="high">high</option>
                         </select>
+                        {errors.priority && (
+                          <span className="text-danger">
+                            {errors.priority.message}
+                          </span>
+                        )}
                       </div>
 
                       {/* Status Dropdown */}
@@ -227,7 +237,9 @@ const Navbar = ({ fetchTicket }) => {
                         <select
                           className="form-control"
                           id="status"
-                          {...register("status")}
+                          {...register("status", {
+                            required: "Status is required",
+                          })}
                         >
                           <option value="open">open</option>
                           <option value="pending">pending</option>
@@ -235,6 +247,12 @@ const Navbar = ({ fetchTicket }) => {
                           <option value="testing">testing</option>
                           <option value="completed">completed</option>
                         </select>
+
+                        {errors.status && (
+                          <span className="text-danger">
+                            {errors.status.message}
+                          </span>
+                        )}
                       </div>
 
                       {/* Date Picker */}
@@ -244,8 +262,15 @@ const Navbar = ({ fetchTicket }) => {
                           className="form-control"
                           type="date"
                           id="date"
-                          {...register("dueDate")}
+                          {...register("dueDate", {
+                            required: "Date is required",
+                          })}
                         />
+                        {errors.dueDate && (
+                          <span className="text-danger">
+                            {errors.dueDate.message}
+                          </span>
+                        )}
                       </div>
 
                       <div className="form-group">

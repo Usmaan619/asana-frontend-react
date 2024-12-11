@@ -222,3 +222,16 @@ export const getAllNotificationsAPI = async (
     throw error?.response || error;
   }
 };
+
+export const updateAllNotificationsAPI = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      `${environment?.apiUrl}task/updateNotification`,
+      payload
+    );
+
+    return response?.data;
+  } catch (error) {
+    throw error?.response;
+  }
+};

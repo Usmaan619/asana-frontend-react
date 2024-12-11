@@ -12,6 +12,7 @@ import {
   DeleteDailyTaskAPI,
   fetchTicketData,
   getAllDailyTaskUpdate,
+  getAllTasksCountAPI,
   getDailyTaskUpdateFilterAPI,
   UpdateTaskDailyUpdateAPI,
 } from "../../common/Api/api";
@@ -203,9 +204,26 @@ const Update = () => {
     setValue("description", d?.description);
     setCollaboratorSelect(d?.tags);
   };
+
+  const [getAllTasksCount, setGetAllTasksCount] = useState();
+
+  React.useEffect(() => {
+    statusCount();
+
+    const intervalCall = setInterval(() => {
+      statusCount();
+    }, 20000);
+
+    return () => {
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  const statusCount = async () =>
+    setGetAllTasksCount(await getAllTasksCountAPI());
   return (
     <>
-      <Sidebar></Sidebar>
+      <Sidebar NOTIFICATION={getAllTasksCount} />
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar />
         <div className="container-fluid py-4">

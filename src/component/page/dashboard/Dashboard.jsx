@@ -66,8 +66,8 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="">
-        <div className="row">
+      <div className="mx-100">
+        <div className=" d-flex gap-4 overflow-auto ">
           {/* Open Tickets */}
           <div className="col-lg-3">
             <h5 className="text-uppercase text-secondary">Open</h5>
@@ -185,6 +185,34 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
               </Droppable>
             </div>
           </div>
+          {/* Done Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-secondary">Testing</h5>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="testing">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {getStatusTasks("testing").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("testing").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </div>
         </div>
       </div>
     </DragDropContext>
@@ -215,6 +243,7 @@ const Dashboard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false); // To toggle dropdown visibility
   const [selectedAssignee, setSelectedAssignee] = useState(""); // To store the selected value
   const [selectedAssigneeDate, setSelectedAssigneeDate] = useState(); // To store the selected value
+  const [selectedAssigneeTicketNo, setSelectedAssigneeTicketNo] = useState(); // To store the selected value
   const [selectedStatus, setSelectedStatus] = useState(""); // To store the selected value
   const dropdownRef = React.useRef(null); // Reference to the dropdown
   const buttonRef = React.useRef(null); // Reference to the toggle button
@@ -362,28 +391,19 @@ const Dashboard = () => {
   console.log("getAllTasksCount: ", getAllTasksCount);
 
   React.useEffect(() => {
-    // new Promise(async (resolve, reject) => {
-    //   // await statusCount();
-    //   resolve(1);
-    // });
     statusCount();
 
     const intervalCall = setInterval(() => {
       statusCount();
-    }, 10000);
+    }, 20000);
 
     return () => {
       clearInterval(intervalCall);
     };
   }, []);
 
-  const statusCount = async () => {
-    const res = await getAllTasksCountAPI();
-    // NOTIFICATION = res?.totalNotifications;
-    // console.log('NOTIFICATION: ', NOTIFICATION);
-
-    setGetAllTasksCount(res);
-  };
+  const statusCount = async () =>
+    setGetAllTasksCount(await getAllTasksCountAPI());
 
   const CARDDATA = [
     {
@@ -395,7 +415,15 @@ const Dashboard = () => {
       percentageColor: "text-success",
     },
     {
-      title: "In progress Tasks",
+      title: "Open ",
+      value: getAllTasksCount?.openTask,
+      // percentage: "+3%",
+      icon: "ni ni-world",
+      iconColor: "bg-gradient-primary",
+      percentageColor: "text-success",
+    },
+    {
+      title: "In progress ",
       value: getAllTasksCount?.inCompeleteTask,
       // percentage: "+3%",
       icon: "ni ni-world",
@@ -403,7 +431,7 @@ const Dashboard = () => {
       percentageColor: "text-success",
     },
     {
-      title: "Completed Tasks",
+      title: "Completed ",
       value: getAllTasksCount?.compeletedTask,
       // percentage: "+3%",
       icon: "ni ni-world",
@@ -411,8 +439,16 @@ const Dashboard = () => {
       percentageColor: "text-success",
     },
     {
-      title: "Pending Tasks",
+      title: "Pending ",
       value: getAllTasksCount?.pandingTask,
+      // percentage: "+3%",
+      icon: "ni ni-world",
+      iconColor: "bg-gradient-primary",
+      percentageColor: "text-success",
+    },
+    {
+      title: "Testing",
+      value: getAllTasksCount?.testingTask,
       // percentage: "+3%",
       icon: "ni ni-world",
       iconColor: "bg-gradient-primary",
@@ -430,12 +466,16 @@ const Dashboard = () => {
 
   const handleSelectChangeDate = (e) => setSelectedAssigneeDate(e.target.value);
 
+  const handleSelectChangeTicketNo = (e) =>
+    setSelectedAssigneeTicketNo(e.target.value);
+
   const handleFilterTask = async () => {
     try {
       const payload = {
         assignedTo: selectedAssignee,
         status: selectedStatus,
         createdAtDate: selectedAssigneeDate,
+        ticketNo: selectedAssigneeTicketNo,
       };
 
       const res = await getTaskByStatusAndIdAPI(payload);
@@ -479,7 +519,7 @@ const Dashboard = () => {
         <div className="container-fluid py-4">
           <div className="row">
             {CARDDATA.map((card, index) => (
-              <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4" key={index}>
+              <div className="col-xl-2 col-sm-6 mb-xl-0 mb-4" key={index}>
                 <div className="card">
                   <div className="card-body p-3">
                     <div className="row">
@@ -538,9 +578,13 @@ const Dashboard = () => {
                       value={selectedAssignee}
                     >
                       {TaskData?.map((option, index) => (
-                        <option key={index} value={option._id}>
-                          {option.name}
-                        </option>
+                        <>
+                          <option value="">Select All</option>
+
+                          <option key={index} value={option._id}>
+                            {option.name}
+                          </option>
+                        </>
                       ))}
                     </select>
                   </div>
@@ -560,15 +604,30 @@ const Dashboard = () => {
                     </select>
                   </div>
 
-                  <label htmlFor="assgineeDate">Created At</label>
-                  <div className="d-flex justify-content-between">
-                    <input
-                      type="date"
-                      className="form-control"
-                      placeholder="DD-MM-YY"
-                      value={selectedAssigneeDate}
-                      onChange={handleSelectChangeDate}
-                    />
+                  <div className="mb-3">
+                    <label htmlFor="assgineeDate ">Created At</label>
+                    <div className="d-flex justify-content-between">
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="DD-MM-YY"
+                        value={selectedAssigneeDate}
+                        onChange={handleSelectChangeDate}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="ticketNo mt-2">Ticket Number</label>
+                    <div className="d-flex justify-content-between">
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="123433"
+                        value={selectedAssigneeTicketNo}
+                        onChange={handleSelectChangeTicketNo}
+                      />
+                    </div>
                   </div>
                   <div className="d-flex justify-content-between">
                     <button

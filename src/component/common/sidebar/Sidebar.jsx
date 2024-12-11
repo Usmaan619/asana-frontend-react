@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import Link for client-side navigation
 import Logo from "../../../assets/logo/siw-logo.svg";
 import { HiChat, HiClipboardList, HiHome } from "react-icons/hi";
@@ -46,6 +46,12 @@ const Sidebar = ({ NOTIFICATION }) => {
     // },
   ];
 
+  const meno= useMemo(
+    () => NOTIFICATION?.totalNotifications,
+    [NOTIFICATION?.totalNotifications]
+  );
+  console.log('meno: ', meno);
+
   return (
     <aside
       className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-white"
@@ -80,7 +86,7 @@ const Sidebar = ({ NOTIFICATION }) => {
                   </div>
                   <span className="nav-link-text ms-1">{item.label}</span>
                   {item.count && (
-                    <div className="rounded-circle bg-purple px-1 border border-1 border-dark mb-3">
+                    <div className="rounded-circle bg-purple px-1  mb-3">
                       {item.count}
                     </div>
                   )}

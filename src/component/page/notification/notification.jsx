@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getAllNotificationsAPI } from "../../common/Api/api";
+import {
+  getAllNotificationsAPI,
+  updateAllNotificationsAPI,
+} from "../../common/Api/api";
 
 import "../../page/notification/notify.css";
 import Sidebar from "../../common/sidebar/Sidebar";
@@ -96,7 +99,17 @@ const Notifications = () => {
       setOffset(offset - limit);
     }
   };
-
+  const readNotification = async (n) => {
+    try {
+      const res = await updateAllNotificationsAPI({ _id: n?._id });
+      if (res?.success) {
+        fetchNotifications();
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+    }
+  };
   return (
     <>
       <Sidebar />
@@ -117,9 +130,27 @@ const Notifications = () => {
                     {notifications.map((notification) => (
                       <li key={notification._id} className="notification-item">
                         <div className="notification-content">
-                          <strong>
-                            {notification.userId?.name || "Unknown User"}
-                          </strong>
+                          <div className="d-flex justify-content-between">
+                            <strong>
+                              {notification.userId?.name || "Unknown User"}
+                            </strong>
+
+                            <button
+                              disabled={notification?.seen}
+                              onClick={() => {
+                                readNotification(notification);
+                              }}
+                              className={`btn ${
+                                notification?.seen
+                                  ? "btn-secondary"
+                                  : "btn-primary"
+                              }  m-0 w-auto`}
+                              // btn-secondary
+                              type="button"
+                            >
+                              {notification?.seen ? "Read" : "Un Read"}
+                            </button>
+                          </div>
                           <p>{notification.message}</p>
                           <small>
                             {new Date(notification.createdAt).toLocaleString()}
