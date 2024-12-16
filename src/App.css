@@ -12,7 +12,7 @@ body {
 }
 
 
-.bg-gradient-primary,.btn-primary {
+.bg-gradient-primary,.btn-primary{
   background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
 }
   /* background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%); */
@@ -81,8 +81,8 @@ body {
 }
 
 .bg-purple {
-  background: #cb0c9f;
-  color: #fff;
+  background: #cb0c9f !important;
+  color: #fff !important;
   
 }
 
@@ -92,4 +92,26 @@ body {
 
 .card {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
+}
+/* Scrollbar  */
+
+ /* width */
+ ::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent ; 
+
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: transparent; 
 }

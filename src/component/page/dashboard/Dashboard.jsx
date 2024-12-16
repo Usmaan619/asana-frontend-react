@@ -37,11 +37,11 @@ const TaskCard = ({ task, index, onClick }) => {
             <div className="card-body">
               <span className="card-text">Task No.{task?.ticketNo}</span>
               <div className="d-flex">
-                <h6 className="card-title">{task.title}</h6>
+                <h6 className="card-title text-capitalize">{task.title}</h6>
               </div>
-              <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex justify-content-between align-items-center text-capitalize">
                 <p className="card-text text-primary m-0">{task.priority}</p>
-                <p className="card-text text-warning m-0">{task.status}</p>
+                <p className="card-text text-info m-0">{task.status}</p>
               </div>
               <div className="d-flex justify-content-between align-items-center mt-2">
                 <span className="h5 text-danger text-uppercase">
@@ -70,12 +70,12 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
         <div className=" d-flex gap-4 overflow-auto ">
           {/* Open Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-secondary">Open</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">Open</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="open">
                 {(provided) => (
                   <div
-                    className="task-column task-column-overflow overflow-auto fiexd-h "
+                    className="task-column task-colum n-overflow overflow-auto fiexd-h"
                     ref={provided?.innerRef}
                     {...provided?.droppableProps}
                   >
@@ -99,7 +99,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
           {/* In-Progress Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-secondary">In-Progress</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">In-Progress</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="in-progress">
                 {(provided) => {
@@ -130,7 +130,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
           {/* Completed Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-secondary">Completed</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">Completed</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="completed">
                 {(provided) => (
@@ -159,7 +159,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
           {/* Done Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-secondary">Pending</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">Pending</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="pending">
                 {(provided) => (
@@ -187,7 +187,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
           </div>
           {/* Done Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-secondary">Testing</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">Testing</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="testing">
                 {(provided) => (
@@ -253,11 +253,18 @@ const Dashboard = () => {
   }, []);
 
   const fetchTicket = async () => {
-    const data = await featctAllTicket();
-    const user = await fetchTicketData();
-    setTasks(data);
-    setAllTasks(data);
-    setTaskData(user);
+    try {
+      const data = await featctAllTicket();
+      const user = await fetchTicketData();
+
+      setTasks(data);
+      setAllTasks(data);
+      setTaskData(user);
+
+    } catch (error) {
+      console.log('error: ', error);
+
+    }
   };
 
   useEffect(() => {
@@ -270,7 +277,14 @@ const Dashboard = () => {
     };
   }, []);
 
-  const getTask = async () => await featctAllTicket();
+  const getTask = async () => {
+    try {
+      await featctAllTicket();
+    } catch (error) {
+      console.log('error: ', error);
+
+    }
+  }
 
   const handleCloseModal = () => setShow(false);
 
@@ -403,7 +417,15 @@ const Dashboard = () => {
   }, []);
 
   const statusCount = async () =>
-    setGetAllTasksCount(await getAllTasksCountAPI());
+  {
+    try {
+      
+      setGetAllTasksCount(await getAllTasksCountAPI());
+    } catch (error) {
+      console.log('error: ', error);
+      
+    }
+  }
 
   const CARDDATA = [
     {
@@ -483,7 +505,7 @@ const Dashboard = () => {
         if (res?.tasks?.length) setTasks(res?.tasks);
         if (!res?.tasks?.length) toastError("No Task Found");
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // Close dropdown when clicking outside
@@ -518,32 +540,32 @@ const Dashboard = () => {
         <Navbar fetchTicket={fetchTicket} />
         <div className="container-fluid py-4">
           <div className="row">
-            {CARDDATA.map((card, index) => (
+            {CARDDATA?.map((card, index) => (
               <div className="col-xl-2 col-sm-6 mb-xl-0 mb-4" key={index}>
                 <div className="card">
-                  <div className="card-body p-3">
+                  <div className="card-body py-2 px-4">
                     <div className="row">
                       <div className="col-8">
-                        <div className="numbers">
+                        <div className="numbers text-center">
                           <p className="text-sm mb-0 text-capitalize font-weight-bold">
-                            {card.title}
+                            {card?.title}
                           </p>
                           <h5 className="font-weight-bolder mb-0">
-                            {card.value}
+                            {card?.value || 0}
                             <span
-                              className={`${card.percentageColor} text-sm font-weight-bolder`}
+                              className={`${card?.percentageColor} text-sm font-weight-bolder`}
                             >
-                              {card.percentage}
+                              {card?.percentage}
                             </span>
                           </h5>
                         </div>
                       </div>
                       <div className="col-4 text-end">
                         <div
-                          className={`icon icon-shape ${card.iconColor} shadow text-center border-radius-md`}
+                          className={`icon icon-shape ${card?.iconColor} shadow text-center border-radius-md`}
                         >
                           <i
-                            className={`${card.icon} text-lg opacity-10`}
+                            className={`${card?.icon} text-lg opacity-10`}
                             aria-hidden="true"
                           ></i>
                         </div>
