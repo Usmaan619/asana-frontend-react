@@ -9,10 +9,16 @@ import { CARDDATA } from "../../../constant/constant";
 import { TailSpin } from "react-loader-spinner";
 import {
   createTaskDailyUpdateAPI,
+  DeleteDailyTaskAPI,
   fetchTicketData,
   getAllDailyTaskUpdate,
+  getAllTasksCountAPI,
+  getDailyTaskUpdateFilterAPI,
+  UpdateTaskDailyUpdateAPI,
 } from "../../common/Api/api";
 import moment from "moment";
+import { toastError, toastSuccess } from "../../../servers/toastr.service";
+import Notifications from "../notification/notification";
 
 const Update = () => {
   const [show, setShow] = useState(false);
@@ -22,6 +28,8 @@ const Update = () => {
   const {
     register,
     handleSubmit,
+    reset,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -36,38 +44,87 @@ const Update = () => {
     setTaskData(user);
   };
 
+  const [resetFilter, setResetFilter] = useState();
+
   const dailyUpdate = async () => {
     const task = await getAllDailyTaskUpdate();
-
+    setResetFilter(task);
     setDailyTask(task);
   };
 
   const [TaskData, setTaskData] = useState([]);
   const [dailyTask, setDailyTask] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [type, setType] = useState();
+
   const itemsPerPage = 10;
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  // const onSubmit = async (data) => {
+  //   try {
+  //     setIsLoading(true);
+
+  //     console.log("type: ", type);
+  //     if (type === "edit") {
+  //     }
+  //     const payload = {
+  //       ticketNo: data?.taskNumber,
+  //       about: data?.textarea,
+  //       date: data?.date,
+  //       description: data?.description,
+  //       tags: collaboratorSelect,
+  //     };
+
+  //     const res = await createTaskDailyUpdateAPI(payload);
+  //     console.log("res:createTaskDailyUpdateAPI ", res);
+  //     if (res?.success) {
+  //       setIsLoading(false);
+  //       dailyUpdate();
+  //       handleClose();
+  //       reset();
+  //     }
+  //   } catch (error) {
+  //     console.log("error:createTaskDailyUpdateAPI ", error);
+  //     if (!error?.data?.success) toastError(error?.data?.message);
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
+
+      console.log("type: ", type);
+
       const payload = {
         ticketNo: data?.taskNumber,
         about: data?.textarea,
         date: data?.date,
         description: data?.description,
         tags: collaboratorSelect,
+        taskId: type?.taskId,
       };
 
-      const res = await createTaskDailyUpdateAPI(payload);
-      if (res.success) {
+      let res;
+      if (type?.type === "edit") {
+        // Call the edit API
+        res = await UpdateTaskDailyUpdateAPI(payload);
+      } else {
+        // Call the create API
+        res = await createTaskDailyUpdateAPI(payload);
+      }
+
+      if (res?.success) {
         setIsLoading(false);
         dailyUpdate();
         handleClose();
+        reset();
       }
     } catch (error) {
+      console.log("error: ", error);
+      if (!error?.data?.success) toastError(error?.data?.message);
       setIsLoading(false);
     }
   };
@@ -77,8 +134,6 @@ const Update = () => {
 
   const onCollaboratorRemove = (selectedList) =>
     setCollaboratorSelect(selectedList);
-
-  const handleInputChange = (e) => e.target.value.replace(/[^0-9]/g, "");
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -90,114 +145,235 @@ const Update = () => {
     pageNumbers.push(i);
   }
 
+  const [startDate, setStartDate] = useState();
+
+  const handleFilterTask = async () => {
+    try {
+      console.log("startDate: ", startDate);
+      if (!startDate) {
+        return toastError(" Please select start date!");
+      }
+      const res = await getDailyTaskUpdateFilterAPI(startDate);
+      console.log("res: ", res?.data);
+      if (res?.success) {
+        if (res?.data?.length) setDailyTask(res?.data);
+        console.log("res?.data?.length: ", res?.data?.length);
+
+        if (!res?.data?.length) toastError("No Task Found");
+      }
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  const resetTaskFilter = () => {
+    setDailyTask(resetFilter);
+    setStartDate("");
+  };
+
+  const onDeleteTaskUpdate = async (t) => {
+    try {
+      const res = await DeleteDailyTaskAPI(t?._id);
+
+      if (res?.success) {
+        toastSuccess(res?.message);
+        await dailyUpdate();
+      }
+    } catch (error) {
+      if (!error?.data?.success) toastError(error?.data?.message);
+      console.log("error:DeleteDailyTaskAPI ", error);
+    }
+  };
+
+  console.log("type: ", type);
+  const onEditTaskUpdate = (t, type) => {
+    setType({ type, taskId: t?._id });
+    console.log("t: ", t);
+    populateData(t);
+    handleShow();
+  };
+
+  const populateData = (d) => {
+    setValue("taskNumber", d?.ticketNo);
+    setValue("textarea", d?.about);
+
+    setValue(
+      "date",
+      d?.date ? new Date(d?.date).toISOString().split("T")[0] : ""
+    );
+    setValue("description", d?.description);
+    setCollaboratorSelect(d?.tags);
+  };
+
+  const [getAllTasksCount, setGetAllTasksCount] = useState();
+
+  React.useEffect(() => {
+    statusCount();
+
+    const intervalCall = setInterval(() => {
+      statusCount();
+    }, 20000);
+
+    return () => {
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  const statusCount = async () =>
+    setGetAllTasksCount(await getAllTasksCountAPI());
   return (
     <>
-      <Sidebar></Sidebar>
+      <Sidebar NOTIFICATION={getAllTasksCount} />
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar />
         <div className="container-fluid py-4">
           <div className="row">
-            {CARDDATA.map((card, index) => (
-              <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4" key={index}>
-                <div className="card">
-                  <div className="card-body p-3">
-                    <div className="row">
-                      <div className="col-8">
-                        <div className="numbers">
-                          <p className="text-sm mb-0 text-capitalize font-weight-bold">
-                            {card.title}
-                          </p>
-                          <h5 className="font-weight-bolder mb-0">
-                            {card.value}
-                            <span
-                              className={`${card.percentageColor} text-sm font-weight-bolder`}
-                            >
-                              {card.percentage}
-                            </span>
-                          </h5>
-                        </div>
-                      </div>
-                      <div className="col-4 text-end">
-                        <div
-                          className={`icon icon-shape ${card.iconColor} shadow text-center border-radius-md`}
-                        >
-                          <i
-                            className={`${card.icon} text-lg opacity-10`}
-                            aria-hidden="true"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
+            <div className="container-fluid py-4 ">
+              <div className="d-flex justify-content-between align-items-center">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    handleShow();
+                    reset();
+                    setCollaboratorSelect([]);
+                    setType("");
+                  }}
+                  className="my-3"
+                >
+                  My Task
+                </Button>
+                <div className="d-flex gap-4 align-items-center">
+                  <div className="d-flex flex-column start-date-constainer">
+                    <label htmlFor="startDate" className="">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      className="form-control"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
                   </div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleFilterTask}
+                  >
+                    Filter
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={resetTaskFilter}
+                  >
+                    Reset
+                  </button>
                 </div>
               </div>
-            ))}
 
-            <div class="container-fluid py-4">
-              <Button variant="primary" onClick={handleShow} className="mt-3">
-                Update
-              </Button>
-              <div class="row">
-                <div class="col-12">
-                  <div class="card mb-4">
-                    <div class="card-header pb-0">
+              <div className="row">
+                <div className="col-12">
+                  <div className="card mb-4">
+                    <div className="card-header pb-0">
                       <h6>Report table</h6>
                     </div>
-                    <div class="card-body px-0 pt-0 pb-2">
-                      <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-0">
+                    <div className="card-body px-0 pt-0 pb-2">
+                      <div className="table-responsive p-0">
+                        <table className="table align-items-center mb-0">
                           <thead>
                             <tr>
-                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Ticket No.
                               </th>
-                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Ticket Created By
+                              </th>
+                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                 About
                               </th>
-                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Date
                               </th>
-                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Description
                               </th>
-                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                 Tags
                               </th>
-                              <th class="text-secondary opacity-7"></th>
+                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                Action
+                              </th>
+                              <th className="text-secondary opacity-7"></th>
                             </tr>
                           </thead>
-                          {currentItems.map((link, index) => (
+                          {currentItems?.map((link, index) => (
                             <tbody key={index}>
                               <tr>
                                 <td>
-                                  <h6 class="font-weight-bold ms-4">
-                                    {link.ticketNo ? link.ticketNo : "NA"}
+                                  <h6 className="font-weight-bold ms-4">
+                                    {link?.ticketNo ? link?.ticketNo : "NA"}
                                   </h6>
                                 </td>
                                 <td>
-                                  <p class="text-xs font-weight-bold mb-0">
-                                    {link.about ? link.about : "NA"}
+                                  <span className="text-light bg-gradient-primary mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold">
+                                    {link?.assignedTo?.name
+                                      ? link?.assignedTo?.name
+                                      : "NA"}
+                                  </span>
+                                </td>
+
+                                <td>
+                                  <p className="text-xs font-weight-bold mb-0">
+                                    {link?.about ? link?.about : "NA"}
                                   </p>
                                 </td>
-                                <td class="align-middle text-center text-sm">
+                                <td className="align-middle text-center text-sm">
                                   {moment(link.date).format("DD MM YYYY")
                                     ? moment(link.date).format("DD MM YYYY")
                                     : "NA"}
                                 </td>
-                                <td class="align-middle text-center">
-                                  <span class="text-xs font-weight-bold">
-                                    {link.description ? link.description : "NA"}
+                                <td className="align-middle text-center">
+                                  <span className="text-xs font-weight-bold">
+                                    {link?.description
+                                      ? link?.description
+                                      : "NA"}
                                   </span>
                                 </td>
-                                <td class="align-middle text-center">
-                                  {link.tags.map((item, index) => (
+                                <td className="align-middle text-center">
+                                  {link?.tags?.map((item, index) => (
                                     <span
-                                      class="text-light bg-gradient-success mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold"
+                                      className="text-light bg-gradient-success mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold"
                                       key={index}
                                     >
                                       {item.name ? item.name : "NA"}
                                     </span>
                                   ))}
+                                </td>
+
+                                <td>
+                                  {/*  */}
+                                  <div className="ms-auto text-end">
+                                    <a
+                                      onClick={() => {
+                                        onDeleteTaskUpdate(link);
+                                      }}
+                                      className="btn btn-link text-danger text-gradient px-3 mb-0"
+                                    >
+                                      <i className="far fa-trash-alt me-2"></i>
+                                      Delete
+                                    </a>
+                                    <a
+                                      onClick={() => {
+                                        onEditTaskUpdate(link, "edit");
+                                      }}
+                                      className="btn btn-link text-dark px-3 mb-0"
+                                    >
+                                      <i
+                                        className="fas fa-pencil-alt text-dark me-2"
+                                        aria-hidden="true"
+                                      ></i>
+                                      Edit
+                                    </a>
+                                  </div>
                                 </td>
                               </tr>
                             </tbody>
@@ -207,11 +383,10 @@ const Update = () => {
                     </div>
                     <nav aria-label="Page navigation" className="m-auto">
                       <ul className="pagination justify-centent-center">
-                        {pageNumbers.map((number) => (
+                        {pageNumbers?.map((number) => (
                           <li key={number} className="page-item mx-1">
                             <a
                               onClick={() => paginate(number)}
-                              href="#!"
                               className="page-link"
                             >
                               {number}
@@ -238,6 +413,7 @@ const Update = () => {
               <label htmlFor="taskNumber">Task Number</label>
               <input
                 type="text"
+                disabled={type?.type === "edit"}
                 className={`form-control ${
                   errors.taskNumber ? "is-invalid" : ""
                 }`}
@@ -262,24 +438,41 @@ const Update = () => {
               <textarea
                 className="form-control"
                 rows={3}
-                {...register("textarea")}
+                {...register("textarea", {
+                  required: "About is required",
+                })}
               />
+              {errors.textarea && (
+                <span className="text-danger">{errors.textarea.message}</span>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="date">Date</label>
               <input
                 type="date"
                 className="form-control"
-                {...register("date")}
+                {...register("date", {
+                  required: "Date is required",
+                })}
               />
+              {errors.date && (
+                <span className="text-danger">{errors.date.message}</span>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="description">Description</label>
               <textarea
                 className="form-control"
                 rows={3}
-                {...register("description")}
+                {...register("description", {
+                  required: "Description is required",
+                })}
               />
+              {errors.description && (
+                <span className="text-danger">
+                  {errors.description.message}
+                </span>
+              )}
             </div>
             <div className="mb-3">
               <label htmlFor="collaborator">Collaborator</label>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { signUpAPI } from "../../common/Api/api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
 import { toastError } from "../../../servers/toastr.service";
 
@@ -28,12 +28,9 @@ const Signup = () => {
         setIsLoading(false);
       }
 
-      if (response?.response?.data?.message) {
-        toastError(response.response.data.message);
-        setIsLoading(false);
-      }
+      if (!response?.data?.success) setIsLoading(false);
     } catch (error) {
-      // setErrorMessage("Signup failed. Please try again.");
+      if (!error?.data?.success) toastError(error?.data?.message);
       setIsLoading(false);
     }
   };
@@ -149,9 +146,9 @@ const Signup = () => {
                     )}
                     <p className="text-sm mt-3 mb-0">
                       Already have an account?{" "}
-                      <a href="#" className="text-dark font-weight-bolder">
+                      <Link to="/" className="text-dark font-weight-bolder">
                         Sign in
-                      </a>
+                      </Link>
                     </p>
                   </div>
                 </div>
