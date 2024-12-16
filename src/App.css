@@ -11,9 +11,11 @@ body {
   background-image: url(assets/img/curved-images/curved14.jpg);
 }
 
-.bg-gradient-primary {
-  background-image: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
+
+.bg-gradient-primary,.btn-primary {
+  background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
 }
+  /* background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%); */
 /* ----Modal----- */
 
 /* src/Modal.css */
@@ -86,4 +88,8 @@ body {
 
 .s {
   overflow-x: auto;
+}
+
+.card {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
 }

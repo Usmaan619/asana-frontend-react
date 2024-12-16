@@ -281,25 +281,25 @@ const Update = () => {
                         <table className="table align-items-center mb-0">
                           <thead>
                             <tr>
-                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-uppercase text-dark text-sm font-weight-bolder opacity-7">
                                 Ticket No.
                               </th>
-                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-uppercase text-dark text-sm font-weight-bolder opacity-7">
                                 Ticket Created By
                               </th>
-                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                              <th className="text-uppercase text-dark text-sm font-weight-bolder opacity-7 ps-2">
                                 About
                               </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-dark text-sm font-weight-bolder opacity-7">
                                 Date
                               </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-dark text-sm font-weight-bolder opacity-7">
                                 Description
                               </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-dark text-sm font-weight-bolder opacity-7">
                                 Tags
                               </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                              <th className="text-center text-uppercase text-dark text-sm font-weight-bolder opacity-7">
                                 Action
                               </th>
                               <th className="text-secondary opacity-7"></th>
@@ -314,61 +314,61 @@ const Update = () => {
                                   </h6>
                                 </td>
                                 <td>
-                                  <span className="text-light bg-gradient-primary mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold">
+                                  <span className="text-dark mx-1 p-2 pt-1 pb-1  text-xs text-uppercase fw-bolder">
                                     {link?.assignedTo?.name
                                       ? link?.assignedTo?.name
                                       : "NA"}
                                   </span>
                                 </td>
 
-                                <td>
-                                  <p className="text-xs font-weight-bold mb-0">
+                                <td className="">
+                                  <p className="text-xs font-weight-bold mb-0 text-truncate w-75">
                                     {link?.about ? link?.about : "NA"}
                                   </p>
                                 </td>
                                 <td className="align-middle text-center text-sm">
-                                  {moment(link.date).format("DD MM YYYY")
-                                    ? moment(link.date).format("DD MM YYYY")
+                                  {moment(link.date).format("DD/MM/YYYY")
+                                    ? moment(link.date).format("DD/MM/YYYY")
                                     : "NA"}
                                 </td>
-                                <td className="align-middle text-center">
-                                  <span className="text-xs font-weight-bold">
+                                <td className="align-middle text-center text-truncate">
+                                  <span className="text-xs font-weight-bold text-truncate w-75">
                                     {link?.description
                                       ? link?.description
                                       : "NA"}
                                   </span>
                                 </td>
-                                <td className="align-middle text-center">
+                                <td className="align-middle ">
                                   {link?.tags?.map((item, index) => (
                                     <span
-                                      className="text-light bg-gradient-success mx-1 p-2 pt-1 pb-1 rounded-pill text-xs text-uppercase font-weight-bold"
+                                      className="fw-bolder text-dark mx-1  text-xs"
                                       key={index}
                                     >
-                                      {item.name ? item.name : "NA"}
+                                      {item.name ? `${item?.name} ,` : "NA"}
                                     </span>
                                   ))}
                                 </td>
 
                                 <td>
                                   {/*  */}
-                                  <div className="ms-auto text-end">
+                                  <div className="ms-auto">
                                     <a
                                       onClick={() => {
                                         onDeleteTaskUpdate(link);
                                       }}
-                                      className="btn btn-link text-danger text-gradient px-3 mb-0"
+                                      className="btn btn-link border mx-1 text-danger text-gradient px-2 py-2 mb-0"
                                     >
-                                      <i className="far fa-trash-alt me-2"></i>
+                                      <i className="far fa-trash-alt"></i>
                                       Delete
                                     </a>
                                     <a
                                       onClick={() => {
                                         onEditTaskUpdate(link, "edit");
                                       }}
-                                      className="btn btn-link text-dark px-3 mb-0"
+                                      className="btn btn-link border mx-1 text-dark px-2 py-2 mb-0"
                                     >
                                       <i
-                                        className="fas fa-pencil-alt text-dark me-2"
+                                        className="fas fa-pencil-alt text-dark"
                                         aria-hidden="true"
                                       ></i>
                                       Edit

@@ -75,7 +75,8 @@ const Notifications = () => {
         limit,
         offset
       );
-      setNotifications(data);
+      setNotifications(data || []);
+      console.log('data: ', data);
       setTotal(pagination.total);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -116,23 +117,23 @@ const Notifications = () => {
 
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar />
-        <div className="container-fluid py-4">
+        <div className="container-fluid">
           <div className="row">
-            <div className="container-fluid py-4 ">
-              <div className="notifications-container">
-                <h2>Notifications</h2>
+            <div className="container-fluid ">
+              <div className="">
+                <h2 className="">NOTIFICATIONS</h2>
                 {loading ? (
                   <p className="loading">Loading...</p>
-                ) : notifications.length === 0 ? (
+                ) : notifications?.length === 0 ? (
                   <p className="no-notifications">No notifications found.</p>
                 ) : (
-                  <ul className="notifications-list">
-                    {notifications.map((notification) => (
-                      <li key={notification._id} className="notification-item">
+                  <ul className="notifications-list row gap-3 d-flex justify-content-evenly">
+                    {notifications?.map((notification) => (
+                      <li key={notification?._id} className="notification-item col-lg-3 shadow">
                         <div className="notification-content">
-                          <div className="d-flex justify-content-between">
-                            <strong>
-                              {notification.userId?.name || "Unknown User"}
+                          <div className="d-flex justify-content-between align-item-center mb-1">
+                            <strong className="text-uppercase">
+                              {notification?.userId?.name || "Unknown User"}
                             </strong>
 
                             <button
@@ -144,16 +145,17 @@ const Notifications = () => {
                                 notification?.seen
                                   ? "btn-secondary"
                                   : "btn-primary"
-                              }  m-0 w-auto`}
+                              }  m-0 w-auto px-2 py-1 `}
                               // btn-secondary
                               type="button"
                             >
-                              {notification?.seen ? "Read" : "Un Read"}
+                              {notification?.seen ? "Read" : "Un-Read"}
                             </button>
                           </div>
-                          <p>{notification.message}</p>
+                          <hr className="my-2 border-primary border" />
+                          <p>{notification?.message}</p>
                           <small>
-                            {new Date(notification.createdAt).toLocaleString()}
+                            {new Date(notification?.createdAt).toLocaleString()}
                           </small>
                         </div>
                       </li>
