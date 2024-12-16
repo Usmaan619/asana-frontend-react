@@ -11,7 +11,7 @@ body {
   background-image: url(assets/img/curved-images/curved14.jpg);
 }
 
-.bg-gradient-primary {
+.bg-gradient-primary{
   background-image: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
 }
 /* ----Modal----- */
@@ -79,11 +79,34 @@ body {
 }
 
 .bg-purple {
-  background: #cb0c9f;
-  color: #fff;
+  background: #cb0c9f !important;
+  color: #fff !important;
   
 }
 
 .s {
   overflow-x: auto;
+}
+
+/* Scrollbar  */
+
+ /* width */
+ ::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent ; 
+
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: transparent; 
 }
