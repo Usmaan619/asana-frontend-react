@@ -8,8 +8,214 @@ import {
   // updateTaskAPI,
 } from "../../common/Api/api";
 import Sidebar from "../../common/sidebar/Sidebar";
+import { toastError, toastSuccess } from "../../../servers/toastr.service";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import ReactQuill from "react-quill";
+import { quillFormats, quillModules } from "../../../constant/constant";
+import {
+  getFirstAndLastLatterOfName,
+  NOTIFICATION,
+} from "../../../utils/helper";
+import LineChart from "../../common/Charts/LineChart";
+import DoughnutChart from "../../common/Charts/PieChart";
 
+// Task Card Component
+const TaskCard = ({ task, index, onClick }) => {
+  return (
+    <Draggable draggableId={task._id} index={index}>
+      {(provided) => (
+        <div
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          className="my-2"
+          onClick={onClick}
+        >
+          <div className="card task-card">
+            <div className="card-body">
+              <span className="card-text">Task No.{task?.ticketNo}</span>
+              <div className="d-flex">
+                <h6 className="card-title text-capitalize">{task.title}</h6>
+              </div>
+              <div className="d-flex justify-content-between align-items-center text-capitalize">
+                <p className="card-text text-warning m-0">{task.priority}</p>
+                <p className="card-text text-info m-0">{task.status}</p>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mt-2">
+                <span className="h5 text-danger text-uppercase">
+                  {getFirstAndLastLatterOfName(task.assignedTo?.name)}
+                </span>
+                <span className="h6 text-primary">
+                  {new Date(task.dueDate).toLocaleDateString("en-IN")}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </Draggable>
+  );
+};
 
+// Task Board with Drag-and-Drop
+const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
+  const getStatusTasks = (status) =>
+    tasks.filter((task) => task.status === status);
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="mx-100">
+        <div className="d-flex gap-4 overflow-auto ">
+          {/* Open Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-dark fw-bolder">Open</h5>
+            <div className="fiexd-h overflow-y-auto">
+              <Droppable droppableId="open">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided?.innerRef}
+                    {...provided?.droppableProps}
+                  >
+                    {getStatusTasks("open").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("open").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </div>
+
+          {/* In-Progress Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-dark fw-bolder">In-Progress</h5>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="in-progress">
+                {(provided) => {
+                  return (
+                    <div
+                      className="task-column task-column-overflow overflow-auto fiexd-h"
+                      ref={provided?.innerRef}
+                      {...provided?.droppableProps}
+                    >
+                      {getStatusTasks("in-progress").length === 0 && (
+                        <div style={{ minHeight: "50px" }}>No tasks</div>
+                      )}
+                      {getStatusTasks("in-progress").map((task, index) => (
+                        <TaskCard
+                          key={task._id}
+                          task={task}
+                          index={index}
+                          onClick={() => handleModal(task)}
+                        />
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  );
+                }}
+              </Droppable>
+            </div>
+          </div>
+
+          {/* Completed Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-dark fw-bolder">Completed</h5>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="completed">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {getStatusTasks("completed").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("completed").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </div>
+
+          {/* Done Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-dark fw-bolder">Pending</h5>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="pending">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {getStatusTasks("pending").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("pending").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </div>
+          {/* Done Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-dark fw-bolder">Testing</h5>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="testing">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {getStatusTasks("testing").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("testing").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </div>
+        </div>
+      </div>
+    </DragDropContext>
+  );
+};
 
 // Main Dashboard Component
 const Dashboard = () => {
@@ -33,10 +239,8 @@ const Dashboard = () => {
       setTasks(data);
       setAllTasks(data);
       setTaskData(user);
-
     } catch (error) {
-      console.log('error: ', error);
-
+      console.log("error: ", error);
     }
   };
 
@@ -54,8 +258,7 @@ const Dashboard = () => {
     try {
       await featctAllTicket();
     } catch (error) {
-      console.log('error: ', error);
-
+      console.log("error: ", error);
     }
   }
   
@@ -75,21 +278,19 @@ const Dashboard = () => {
     };
   }, []);
 
-  const statusCount = async () =>
-  {
+  const statusCount = async () => {
     try {
-      
       setGetAllTasksCount(await getAllTasksCountAPI());
     } catch (error) {
-      console.log('error: ', error);
-      
+      console.log("error: ", error);
     }
-  }
+  };
 
   const CARDDATA = [
     {
       title: "Total Tasks",
       value: getAllTasksCount?.totalTasks,
+      data: [0, getAllTasksCount?.totalTasks],
       // percentage: "+55%",
       icon: "ni ni-money-coins",
       iconColor: "bg-gradient-primary",
@@ -114,6 +315,7 @@ const Dashboard = () => {
     {
       title: "Completed ",
       value: getAllTasksCount?.compeletedTask,
+      data: [0, getAllTasksCount?.compeletedTask],
       // percentage: "+3%",
       icon: "ni ni-world",
       iconColor: "bg-gradient-primary",
@@ -204,6 +406,17 @@ const Dashboard = () => {
                 </div>
               </div>
             ))}
+          </div>
+          {/* Charts */}
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-6 py-4">
+                <LineChart ChartData={getAllTasksCount} />
+              </div>
+              <div className="col-lg-6 py-4">
+                <DoughnutChart ChartData={getAllTasksCount} />
+              </div>
+            </div>
           </div>
         </div>
       </main>
