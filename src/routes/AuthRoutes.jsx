@@ -6,10 +6,11 @@ import Signup from "../component/page/signup/signUp";
 import Dashboard from "../component/page/dashboard/Dashboard";
 import { UserContext } from "../Context/UserContext";
 import { GET_CASHE } from "../utils/helper";
-import Sidebar from "../component/common/sidebar/Sidebar";
+// import Sidebar from "../component/common/sidebar/Sidebar";
 import Update from "../component/page/update";
-import socket from "../socket/socket";
+// import socket from "../socket/socket";
 import Notifications from "../component/page/notification/notification";
+import Task from "../component/page/task/task";
 
 function AuthRoutes() {
   const { setUserLogin, UserLogin } = useContext(UserContext);
@@ -43,6 +44,8 @@ function AuthRoutes() {
             <Route path="/signup" element={<Navigate to="/" />} />
             <Route path="/update" element={<Update />} />
             <Route path="/notification" element={<Notifications />} />
+            <Route path="/task" element={<Task />} />
+
           </>
         )}
         <Route path="*" element={<Login />} />

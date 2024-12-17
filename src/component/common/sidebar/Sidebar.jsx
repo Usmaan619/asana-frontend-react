@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import Link for client-side navigation
 import Logo from "../../../assets/logo/siw-logo.svg";
 import { HiChat, HiClipboardList, HiHome } from "react-icons/hi";
+import { FaTasks } from "react-icons/fa";
 import { CLEAR_CASHE } from "../../../utils/helper";
 import { UserContext } from "../../../Context/UserContext";
 
@@ -19,10 +20,11 @@ const Sidebar = ({ NOTIFICATION }) => {
       isActive: window?.location?.pathname === "/dashboard" ? true : false,
     },
     {
-      // path: "/tables",
-      icon: <HiHome />,
+      path: "/task",
+      icon: <FaTasks />,
       label: "Task",
-      isActive: false,
+      isActive: window?.location?.pathname === "/task" ? true : false,
+
     },
     {
       path: "/update",
@@ -99,7 +101,7 @@ const Sidebar = ({ NOTIFICATION }) => {
         {/* Footer Section (optional, uncomment if needed) */}
         <div className="sidenav-footer position-absolute bottom-0 mb-4 ms-4">
           <a
-            className="btn btn-outline-info btn-sm mb-0 me-3 w-100"
+            className="btn btn-outline-info btn-lg mb-0 me-3 w-100"
             onClick={() => {
               CLEAR_CASHE();
               navigate("/");

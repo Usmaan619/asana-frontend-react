@@ -1,16 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../common/navbar/Navbar";
-import { toast } from "react-toastify";
 import {
   featctAllTicket,
   fetchTicketData,
   getAllTasksCountAPI,
-  getTaskByStatusAndIdAPI,
-  updateTaskAPI,
+  // getTaskByStatusAndIdAPI,
+  // updateTaskAPI,
 } from "../../common/Api/api";
-import Modal from "react-bootstrap/Modal";
-import { Controller, useForm } from "react-hook-form";
-import Multiselect from "multiselect-react-dropdown";
 import Sidebar from "../../common/sidebar/Sidebar";
 import { toastError, toastSuccess } from "../../../servers/toastr.service";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -223,30 +219,11 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
 // Main Dashboard Component
 const Dashboard = () => {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    control,
-    formState: { errors },
-  } = useForm();
   const [tasks, setTasks] = useState([]);
   const [allTasks, setAllTasks] = useState([]);
-
-  const [show, setShow] = useState(false);
-  const [currentTask, setCurrentTask] = useState(null);
+  
   const [TaskData, setTaskData] = useState([]);
-
-  const [ticket, setticket] = useState([]);
-  const [comments, setComments] = useState();
-  const [taskTicketNo, settaskTicketNo] = useState();
-  const [collaboratorSelect, setCollaboratorSelect] = useState([]);
-
   const [dropdownOpen, setDropdownOpen] = useState(false); // To toggle dropdown visibility
-  const [selectedAssignee, setSelectedAssignee] = useState(""); // To store the selected value
-  const [selectedAssigneeDate, setSelectedAssigneeDate] = useState(); // To store the selected value
-  const [selectedAssigneeTicketNo, setSelectedAssigneeTicketNo] = useState(); // To store the selected value
-  const [selectedStatus, setSelectedStatus] = useState(""); // To store the selected value
   const dropdownRef = React.useRef(null); // Reference to the dropdown
   const buttonRef = React.useRef(null); // Reference to the toggle button
 
@@ -283,122 +260,8 @@ const Dashboard = () => {
     } catch (error) {
       console.log("error: ", error);
     }
-  };
-
-  const handleCloseModal = () => setShow(false);
-
-  const onDragEnd = async (result) => {
-    if (!result.destination) return;
-
-    const { source, destination } = result;
-
-    if (source.droppableId !== destination.droppableId) {
-      const updatedTasks = tasks.map((task) =>
-        task._id === result?.draggableId
-          ? { ...task, status: destination?.droppableId }
-          : task
-      );
-      setTasks(updatedTasks);
-      try {
-        const updatedTask = tasks.find(
-          (task) => task?._id === result?.draggableId
-        );
-        const res = await updateTaskAPI(updatedTask._id, {
-          status: destination?.droppableId,
-        });
-
-        if (res?.success) {
-          await statusCount();
-        }
-        console.log("res:updateTaskAPI ", res);
-        toastSuccess("Task status updated successfully!");
-      } catch (error) {
-        toast.error("Error updating task status");
-      }
-    }
-  };
-
-  const handleOpenModal = () => setShow(true);
-
-  // Handle modal and set the form values
-  const handleModal = (index) => {
-    //
-    setCurrentTask(index);
-    setTaskValues(index);
-    handleOpenModal();
-  };
-
-  // Set form values using setValue
-  const setTaskValues = (task) => {
-    if (task?.comments) setComments(task?.comments);
-    settaskTicketNo(task?.ticketNo);
-    setValue("title", task?.title || "");
-    setValue("assignedTo", task?.assignedTo?._id || "");
-    setValue("assignedTo", task?.assignedTo?._id || "");
-    setValue("priority", task?.priority || "medium");
-    setValue("status", task?.status || "open");
-    setValue("comment", task?.comment || "");
-    setValue(
-      "dueDate",
-      task?.dueDate ? new Date(task?.dueDate).toISOString().split("T")[0] : ""
-    );
-    setValue("description", task?.description || "");
-
-    setCollaboratorSelect(task?.collaborators || []);
-  };
-
-  const onSubmit = async (data) => {
-    try {
-      const payload = {
-        title: data?.title,
-        assignedTo: data?.assignedTo,
-        priority: data?.priority,
-        status: data?.status,
-        dueDate: data?.dueDate,
-        description: data?.description,
-        comments: data?.comment,
-        collaborators: data?.collaborator,
-      };
-
-      const response = await updateTaskAPI(currentTask?._id, payload);
-
-      if (response?.success) {
-        toastSuccess();
-        fetchTicket();
-        handleCloseModal();
-      }
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-
-  // Multi-select event handlers
-  const onCollaboratorSelect = (selectedList) => {
-    setCollaboratorSelect(selectedList);
-    setValue("collaborator", selectedList);
-  };
-
-  const onCollaboratorRemove = (selectedList) => {
-    setCollaboratorSelect(selectedList);
-    setValue("collaborator", selectedList);
-  };
-
-  /**
-   *  Reference to the div you want to copy
-   * */
-  const divRef = React.useRef(null);
-
-  const copyDivToClipboard = () => {
-    if (divRef.current) {
-      const range = document.createRange();
-      range.selectNode(divRef.current);
-      window.getSelection().removeAllRanges(); // Clear current selection
-      window.getSelection().addRange(range); // Select the text
-      document.execCommand("copy"); // Copy the selected text to clipboard
-      window.getSelection().removeAllRanges(); // Deselect
-      toast.success("Copied!"); // Display a success message
-    }
-  };
+  }
+  
 
   const [getAllTasksCount, setGetAllTasksCount] = useState();
   console.log("getAllTasksCount: ", getAllTasksCount);
@@ -476,36 +339,6 @@ const Dashboard = () => {
     },
   ];
 
-  // Toggle dropdown visibility
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-  // Handle selection from dropdown
-  const handleSelectChangeAssignee = (e) => setSelectedAssignee(e.target.value);
-
-  const handleSelectChangeStatus = (e) => setSelectedStatus(e.target.value);
-
-  const handleSelectChangeDate = (e) => setSelectedAssigneeDate(e.target.value);
-
-  const handleSelectChangeTicketNo = (e) =>
-    setSelectedAssigneeTicketNo(e.target.value);
-
-  const handleFilterTask = async () => {
-    try {
-      const payload = {
-        assignedTo: selectedAssignee,
-        status: selectedStatus,
-        createdAtDate: selectedAssigneeDate,
-        ticketNo: selectedAssigneeTicketNo,
-      };
-
-      const res = await getTaskByStatusAndIdAPI(payload);
-      if (res.success) {
-        if (res?.tasks?.length) setTasks(res?.tasks);
-        if (!res?.tasks?.length) toastError("No Task Found");
-      }
-    } catch (error) {}
-  };
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -529,7 +362,7 @@ const Dashboard = () => {
     };
   }, [dropdownOpen]);
 
-  const resetTaskFilter = () => setTasks(allTasks);
+  // const resetTaskFilter = () => setTasks(allTasks);
 
   return (
     <React.Fragment>
