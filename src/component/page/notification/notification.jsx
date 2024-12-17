@@ -62,10 +62,12 @@ import Navbar from "../../common/navbar/Navbar";
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [dailyTask, setDailyTask] = useState([]);
   const [offset, setOffset] = useState(0);
   const [limit] = useState(10);
   const [total, setTotal] = useState(0);
-
+  // const itemsPerPage = 10;
   // Fetch notifications
   const fetchNotifications = async () => {
     setLoading(true);
@@ -111,6 +113,16 @@ const Notifications = () => {
     } finally {
     }
   };
+
+  const totalPages = Math.ceil(total / limit);
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
+
+  const paginate = (pageNumber) => {
+    setOffset((pageNumber - 1) * limit);
+  };
   return (
     <>
       <Sidebar />
@@ -141,11 +153,10 @@ const Notifications = () => {
                               onClick={() => {
                                 readNotification(notification);
                               }}
-                              className={`btn ${
-                                notification?.seen
-                                  ? "btn-secondary"
-                                  : "btn-primary"
-                              }  m-0 w-auto px-2 py-1 `}
+                              className={`btn ${notification?.seen
+                                ? "btn-secondary"
+                                : "btn-primary"
+                                }  m-0 w-auto px-2 py-1 `}
                               // btn-secondary
                               type="button"
                             >
@@ -162,10 +173,24 @@ const Notifications = () => {
                     ))}
                   </ul>
                 )}
-                <div className="pagination-controls">
+                <div className="pagination-controls pb-2">
                   <button onClick={handlePrevious} disabled={offset === 0}>
                     Previous
                   </button>
+                  <nav aria-label="Page navigation" className="m-auto">
+                    <ul className="pagination justify-centent-center">
+                      {pageNumbers?.map((number) => (
+                        <li key={number} className="page-item mx-1">
+                          <a
+                            onClick={() => paginate(number)}
+                            className="page-link"
+                          >
+                            {number}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
                   <button
                     onClick={handleNext}
                     disabled={offset + limit >= total}
@@ -176,6 +201,7 @@ const Notifications = () => {
               </div>
             </div>
           </div>
+
         </div>
       </main>
     </>
