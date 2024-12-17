@@ -40,7 +40,7 @@ const TaskCard = ({ task, index, onClick }) => {
                 <h6 className="card-title text-capitalize">{task.title}</h6>
               </div>
               <div className="d-flex justify-content-between align-items-center text-capitalize">
-                <p className="card-text text-primary m-0">{task.priority}</p>
+                <p className="card-text text-warning m-0">{task.priority}</p>
                 <p className="card-text text-info m-0">{task.status}</p>
               </div>
               <div className="d-flex justify-content-between align-items-center mt-2">
@@ -67,15 +67,15 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="mx-100">
-        <div className=" d-flex gap-4 overflow-auto ">
+        <div className="d-flex gap-4 overflow-auto ">
           {/* Open Tickets */}
           <div className="col-lg-3">
             <h5 className="text-uppercase text-dark fw-bolder">Open</h5>
-            <div className=" fiexd-h overflow-y-auto">
+            <div className="fiexd-h overflow-y-auto">
               <Droppable droppableId="open">
                 {(provided) => (
                   <div
-                    className="task-column task-colum n-overflow overflow-auto fiexd-h"
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
                     ref={provided?.innerRef}
                     {...provided?.droppableProps}
                   >

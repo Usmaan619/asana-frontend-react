@@ -18,12 +18,12 @@ const Sidebar = ({ NOTIFICATION }) => {
       label: "Dashboard",
       isActive: window?.location?.pathname === "/dashboard" ? true : false,
     },
-    // {
-    //   // path: "/tables",
-    //   icon: <HiHome />,
-    //   label: "Board",
-    //   isActive: false,
-    // },
+    {
+      // path: "/tables",
+      icon: <HiHome />,
+      label: "Task",
+      isActive: false,
+    },
     {
       path: "/update",
       icon: <HiClipboardList />,
@@ -78,15 +78,15 @@ const Sidebar = ({ NOTIFICATION }) => {
             {navItems?.map((item, index) => (
               <li key={index} className="nav-item">
                 <Link
-                  className={`nav-link ${item.isActive ? "active" : ""}`}
+                  className={`nav-link ${item.isActive ? "active btn-primary" : ""}`}
                   to={item.path}
                 >
-                  <div className="icon icon-shape icon-sm shadow border-radius-md fs-4 bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <div className="text-dark icon-shape icon-sm shadow border-radius-md fs-4 bg-white text-center me-2 d-flex align-items-center justify-content-center">
                     {item.icon}
                   </div>
                   <span className="nav-link-text ms-1">{item.label}</span>
                   {item.count && (
-                    <div className="rounded-circle bg-purple px-1  mb-3">
+                    <div className="rounded-circle btn-primary px-1  mb-3">
                       {item.count}
                     </div>
                   )}
@@ -99,7 +99,7 @@ const Sidebar = ({ NOTIFICATION }) => {
         {/* Footer Section (optional, uncomment if needed) */}
         <div className="sidenav-footer position-absolute bottom-0 mb-4 ms-4">
           <a
-            className="btn btn-outline-primary btn-sm mb-0 me-3 w-100"
+            className="btn btn-outline-info btn-sm mb-0 me-3 w-100"
             onClick={() => {
               CLEAR_CASHE();
               navigate("/");

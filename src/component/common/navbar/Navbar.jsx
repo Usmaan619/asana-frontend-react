@@ -150,7 +150,7 @@ const Navbar = ({ fetchTicket }) => {
             <div className="ms-md-auto pe-md-3 d-flex align-items-center">
               <div className="add-task w-100">
                 <button
-                  className="btn bg-purple m-0 w-auto"
+                  className="btn btn-primary m-0 w-auto"
                   onClick={() => handleOpenModal(true)}
                   type="button"
                 >
@@ -343,7 +343,7 @@ const Navbar = ({ fetchTicket }) => {
               <li className="nav-item d-flex align-items-center text-uppercase">
                 <AvatarGroup max={5} spacing="medium">
                   {TaskData?.map((n, idx) => (
-                    <Avatar sx={{ bgcolor: "#f48fb1" }} key={idx}>
+                    <Avatar sx={{ bgcolor: "#a3dfdf" }} key={idx}>
                       {getFirstAndLastLatterOfName(n?.name)
                         ? getFirstAndLastLatterOfName(n?.name)
                         : "NA"}
@@ -355,7 +355,7 @@ const Navbar = ({ fetchTicket }) => {
 
               <li className="nav-item d-flex align-items-center text-uppercase">
                 <AvatarGroup max={1} spacing="medium">
-                  <Avatar sx={{ bgcolor: "#000" }}>
+                  <Avatar sx={{ bgcolor: "#330867" }}>
                     {getFirstAndLastLatterOfName(GET_CASHE("name"))
                       ? getFirstAndLastLatterOfName(GET_CASHE("name"))
                       : "NA"}
