@@ -20,6 +20,8 @@ import {
   getFirstAndLastLatterOfName,
   NOTIFICATION,
 } from "../../../utils/helper";
+import LineChart from "../../common/Charts/LineChart";
+import DoughnutChart from "../../common/Charts/PieChart";
 
 // Task Card Component
 const TaskCard = ({ task, index, onClick }) => {
@@ -260,10 +262,8 @@ const Dashboard = () => {
       setTasks(data);
       setAllTasks(data);
       setTaskData(user);
-
     } catch (error) {
-      console.log('error: ', error);
-
+      console.log("error: ", error);
     }
   };
 
@@ -281,10 +281,9 @@ const Dashboard = () => {
     try {
       await featctAllTicket();
     } catch (error) {
-      console.log('error: ', error);
-
+      console.log("error: ", error);
     }
-  }
+  };
 
   const handleCloseModal = () => setShow(false);
 
@@ -416,21 +415,19 @@ const Dashboard = () => {
     };
   }, []);
 
-  const statusCount = async () =>
-  {
+  const statusCount = async () => {
     try {
-      
       setGetAllTasksCount(await getAllTasksCountAPI());
     } catch (error) {
-      console.log('error: ', error);
-      
+      console.log("error: ", error);
     }
-  }
+  };
 
   const CARDDATA = [
     {
       title: "Total Tasks",
       value: getAllTasksCount?.totalTasks,
+      data: [0, getAllTasksCount?.totalTasks],
       // percentage: "+55%",
       icon: "ni ni-money-coins",
       iconColor: "bg-gradient-primary",
@@ -455,6 +452,7 @@ const Dashboard = () => {
     {
       title: "Completed ",
       value: getAllTasksCount?.compeletedTask,
+      data: [0, getAllTasksCount?.compeletedTask],
       // percentage: "+3%",
       icon: "ni ni-world",
       iconColor: "bg-gradient-primary",
@@ -505,7 +503,7 @@ const Dashboard = () => {
         if (res?.tasks?.length) setTasks(res?.tasks);
         if (!res?.tasks?.length) toastError("No Task Found");
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   // Close dropdown when clicking outside
@@ -576,279 +574,16 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-          <div className="mt-3 w-100">
-            {/* filter modal */}
-            <div className=" mt-5  w-100 d-flex justify-content-end">
-              <button
-                className="btn btn-primary"
-                onClick={toggleDropdown}
-                ref={buttonRef}
-              >
-                Filter Task
-              </button>
-
-              {dropdownOpen && (
-                <div
-                  className="dropdown-menu p-4 show mt-6 w-25"
-                  ref={dropdownRef}
-                >
-                  <div className="mb-3">
-                    <label htmlFor="assginee">Assignee</label>
-                    <select
-                      className="form-select"
-                      onChange={handleSelectChangeAssignee}
-                      value={selectedAssignee}
-                    >
-                      {TaskData?.map((option, index) => (
-                        <>
-                          <option value="">Select All</option>
-
-                          <option key={index} value={option._id}>
-                            {option.name}
-                          </option>
-                        </>
-                      ))}
-                    </select>
-                  </div>
-                  <label htmlFor="assginee">Status</label>
-                  <div className="d-flex justify-content-between">
-                    <select
-                      className="form-control"
-                      onChange={handleSelectChangeStatus}
-                      value={selectedStatus}
-                    >
-                      <option value="">Select Status</option>
-                      <option value="open">open</option>
-                      <option value="pending">pending</option>
-                      <option value="in-progress">in-progress</option>
-                      <option value="testing">testing</option>
-                      <option value="completed">completed</option>
-                    </select>
-                  </div>
-
-                  <div className="mb-3">
-                    <label htmlFor="assgineeDate ">Created At</label>
-                    <div className="d-flex justify-content-between">
-                      <input
-                        type="date"
-                        className="form-control"
-                        placeholder="DD-MM-YY"
-                        value={selectedAssigneeDate}
-                        onChange={handleSelectChangeDate}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <label htmlFor="ticketNo mt-2">Ticket Number</label>
-                    <div className="d-flex justify-content-between">
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="123433"
-                        value={selectedAssigneeTicketNo}
-                        onChange={handleSelectChangeTicketNo}
-                      />
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <button
-                      className="btn btn-primary mt-3"
-                      onClick={handleFilterTask}
-                    >
-                      Filter
-                    </button>
-                    <button
-                      className="btn btn-primary mt-3"
-                      onClick={resetTaskFilter}
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-              )}
+          {/* Charts */}
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-6 py-4">
+                <LineChart ChartData={getAllTasksCount} />
+              </div>
+              <div className="col-lg-6 py-4">
+                <DoughnutChart ChartData={getAllTasksCount} />
+              </div>
             </div>
-            {/* filter modal end */}
-          </div>
-          <div className="my-1">
-            <AsanaStyleBoard
-              tasks={tasks}
-              handleModal={handleModal}
-              onDragEnd={onDragEnd}
-            />
-          </div>
-          {/* Task Modal */}
-          <div className="row my-5">
-            <Modal
-              size="lg"
-              show={show}
-              onHide={handleCloseModal}
-              aria-labelledby="example-modal-sizes-title-sm"
-            >
-              <Modal.Header closeButton>
-                <Modal.Title
-                  className="d-flex gap-4 align-items-center"
-                  id="example-modal-sizes-title-sm"
-                >
-                  {currentTask ? "Edit Task" : "Add Task"}
-                  <div className="ms-auto d-flex align-items-center border border-black rounded-pill">
-                    <div ref={divRef} className="mx-2 my-0 h6">
-                      {taskTicketNo}
-                    </div>
-                    <button
-                      onClick={copyDivToClipboard}
-                      className="rounded-pill font-sm bg-gradient-primary text-white border border-none"
-                    >
-                      Copy
-                    </button>
-                  </div>
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="form-group">
-                    <label htmlFor="task_name">Task Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="task_name"
-                      placeholder="Enter Task"
-                      {...register("title", {
-                        required: "Task name is required",
-                      })}
-                    />
-                    {errors.title && (
-                      <span className="text-danger">
-                        {errors.title.message}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="assginee">Assignee</label>
-                    <select
-                      className="form-control"
-                      id="assginee"
-                      {...register("assignedTo", {
-                        required: "Assigne is required",
-                      })}
-                    >
-                      {TaskData?.map((option, index) => (
-                        <option key={index} value={option._id}>
-                          {option.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.assignedTo && (
-                      <span className="text-danger">
-                        {errors.assignedTo.message}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Priority Dropdown */}
-                  <div className="form-group">
-                    <label htmlFor="priority">Priority</label>
-                    <select
-                      className="form-control"
-                      id="priority"
-                      {...register("priority")}
-                    >
-                      <option value="medium">medium</option>
-                      <option value="low">low</option>
-                      <option value="high">high</option>
-                    </select>
-                  </div>
-
-                  {/* Status Dropdown */}
-                  <div className="form-group">
-                    <label htmlFor="status">Status</label>
-                    <select
-                      className="form-control"
-                      id="status"
-                      {...register("status")}
-                    >
-                      <option value="open">open</option>
-                      <option value="pending">pending</option>
-                      <option value="in-progress">in-progress</option>
-                      <option value="testing">testing</option>
-                      <option value="completed">completed</option>
-                    </select>
-                  </div>
-
-                  {/* Due Date */}
-                  <div className="form-group">
-                    <label htmlFor="dueDate">Due Date</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      id="dueDate"
-                      {...register("dueDate")}
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div className="form-group ">
-                    <Controller
-                      name="description"
-                      control={control}
-                      render={({ field }) => {
-                        return (
-                          <ReactQuill
-                            theme="snow"
-                            {...field}
-                            modules={quillModules}
-                            formats={quillFormats}
-                            placeholder="write your content ...."
-                            style={{ height: "220px" }}
-                          ></ReactQuill>
-                        );
-                      }}
-                    />
-                  </div>
-
-                  {/* Collaborators */}
-                  <div className="form-group mt-5">
-                    <label>Collaborator</label>
-                    <Multiselect
-                      options={TaskData}
-                      selectedValues={collaboratorSelect}
-                      displayValue="name"
-                      onSelect={onCollaboratorSelect}
-                      onRemove={onCollaboratorRemove}
-                    />
-                  </div>
-
-                  {/* Comments */}
-                  {comments?.map((comment, index) => (
-                    <div key={index}>
-                      <h6>
-                        {comment.createdBy?.name} at{" "}
-                        {new Date(comment.createdAt).toLocaleDateString(
-                          "en-IN"
-                        )}
-                      </h6>
-                      <p>{comment.text}</p>
-                    </div>
-                  ))}
-
-                  <div className="form-group">
-                    <label htmlFor="comment">Add Comment</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="comment"
-                      placeholder="Add comment"
-                      {...register("comment")}
-                    />
-                  </div>
-
-                  <button type="submit" className="btn btn-primary mt-3">
-                    Submit
-                  </button>
-                </form>
-              </Modal.Body>
-            </Modal>
           </div>
         </div>
       </main>
