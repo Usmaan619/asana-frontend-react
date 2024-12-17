@@ -14,8 +14,8 @@ body {
 }
 
 
-.bg-gradient-primary,.btn-primary{
-  background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);
+.bg-gradient-primary{
+  background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%) !important;
 }
   /* background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%); */
 /* ----Modal----- */
@@ -82,19 +82,23 @@ body {
   margin-bottom: 43px;
 }
 
-.bg-purple {
+/* .bg-purple {
   background: #cb0c9f !important;
-  color: #fff !important;
+  color: #fff !important; 
+} */
+
+.btn-primary{
+  /* background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%); */
+  background-color: #30cfd0 !important;
   
 }
-
 .s {
   overflow-x: auto;
 }
 
-.card {
+/* .card {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
-}
+} */
 /* Scrollbar  */
 
  /* width */
