@@ -54,7 +54,6 @@ const LineChart = ({ ChartData, }) => {
     //     legend: {
     //       position: 'top',
     //     },
-     
     //   }
     },
   };
