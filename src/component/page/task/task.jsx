@@ -35,7 +35,23 @@ const TaskCard = ({ task, index, onClick }) => {
         return "text-secondary"; // default color if no match
     }
   };
-  
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "open":
+        return "text-blue"; // red for high priority
+      case "in-progress":
+        return "text-warning"; // blue for medium priority
+      case "completed":
+        return "text-success"; // green for low priority
+      case "pending":
+        return "text-danger"; // green for low 
+      case "testing":
+        return "text-orange"; // green for low 
+      default:
+        return "text-secondary"; // default color if no match
+    }
+  };
   return (
     <Draggable draggableId={task._id} index={index}>
       {(provided) => (
@@ -48,19 +64,19 @@ const TaskCard = ({ task, index, onClick }) => {
         >
           <div className="card task-card">
             <div className="card-body">
-              <span className="card-text text-bold">Task No.{task?.ticketNo}</span>
+              <span className="card-text text-bolder">Task No.{task?.ticketNo}</span>
               <div className="d-flex">
                 <h6 className="card-title text-capitalize">{task.title}</h6>
               </div>
               <div className="d-flex justify-content-between align-items-center text-capitalize">
-                <p className={`card-text ${getPriorityColor(task.priority)} m-0`}>{task.priority}</p>
-                <p className="card-text text-info m-0">{task.status}</p>
+                <p className={`card-text ${getPriorityColor(task.priority)} text-bold m-0`}>{task.priority}</p>
+                <p className={`card-text ${getStatusColor(task.status)} m-0`}>{task.status}</p>
               </div>
               <div className="d-flex justify-content-between align-items-center mt-2">
-                <span className="h5 text-primary text-uppercase">
+                <span className=" text-primary text-uppercase rounded-circle bg-light px-2 py-1">
                   {getFirstAndLastLatterOfName(task.assignedTo?.name)}
                 </span>
-                <span className="h6 text-danger">
+                <span className="text-bold text-danger">
                   {new Date(task.dueDate).toLocaleDateString("en-IN")}
                 </span>
               </div>
@@ -141,34 +157,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
             </div>
           </div>
 
-          {/* Completed Tickets */}
-          <div className="col-lg-3">
-            <h5 className="text-uppercase text-dark fw-bolder">From To-Do to Done</h5>
-            <div className=" fiexd-h overflow-y-auto">
-              <Droppable droppableId="completed">
-                {(provided) => (
-                  <div
-                    className="task-column task-column-overflow overflow-auto fiexd-h"
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
-                    {getStatusTasks("completed").length === 0 && (
-                      <div style={{ minHeight: "50px" }}>No tasks</div>
-                    )}
-                    {getStatusTasks("completed").map((task, index) => (
-                      <TaskCard
-                        key={task._id}
-                        task={task}
-                        index={index}
-                        onClick={() => handleModal(task)}
-                      />
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </div>
-          </div>
+
 
           {/* Done Tickets */}
           <div className="col-lg-3">
@@ -226,6 +215,35 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
               </Droppable>
             </div>
           </div>
+
+          {/* Completed Tickets */}
+          <div className="col-lg-3">
+            <h5 className="text-uppercase text-dark fw-bolder">From To-Do to Done</h5>
+            <div className=" fiexd-h overflow-y-auto">
+              <Droppable droppableId="completed">
+                {(provided) => (
+                  <div
+                    className="task-column task-column-overflow overflow-auto fiexd-h"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {getStatusTasks("completed").length === 0 && (
+                      <div style={{ minHeight: "50px" }}>No tasks</div>
+                    )}
+                    {getStatusTasks("completed").map((task, index) => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        index={index}
+                        onClick={() => handleModal(task)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </div>
         </div>
       </div>
     </DragDropContext>
@@ -248,7 +266,7 @@ const Task = () => {
   const [currentTask, setCurrentTask] = useState(null);
   const [TaskData, setTaskData] = useState([]);
 
-//   const [ticket, setticket] = useState([]);
+  //   const [ticket, setticket] = useState([]);
   const [comments, setComments] = useState();
   const [taskTicketNo, settaskTicketNo] = useState();
   const [collaboratorSelect, setCollaboratorSelect] = useState([]);
@@ -429,14 +447,13 @@ const Task = () => {
     };
   }, []);
 
-  const statusCount = async () =>
-  {
+  const statusCount = async () => {
     try {
-      
+
       setGetAllTasksCount(await getAllTasksCountAPI());
     } catch (error) {
       console.log('error: ', error);
-      
+
     }
   }
 
@@ -628,7 +645,7 @@ const Task = () => {
                   </div>
                 </Modal.Title>
               </Modal.Header>
-              <Modal.Body> 
+              <Modal.Body>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="form-group">
                     <label htmlFor="task_name">Task Name</label>
