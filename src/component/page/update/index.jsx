@@ -331,12 +331,12 @@ const Update = () => {
                                     ? moment(link.date).format("DD/MM/YYYY")
                                     : "NA"}
                                 </td>
-                                <td className="align-middle text-center text-truncate">
-                                  <span className="text-xs font-weight-bold text-truncate w-75">
+                                <td className="align-middle">
+                                  <p className="text-xs font-weight-bold mb-0 text-truncate w-75">
                                     {link?.description
                                       ? link?.description
                                       : "NA"}
-                                  </span>
+                                  </p>
                                 </td>
                                 <td className="align-middle ">
                                   {link?.tags?.map((item, index) => (

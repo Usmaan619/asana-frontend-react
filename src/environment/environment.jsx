@@ -3,5 +3,5 @@ export const environment = {
   // apiUrl: "https://asana-backend-pvsu.onrender.com/api/",
   // apiUrl: "http://192.168.1.30:3003/api/",
   // apiUrl: "http://localhost:3003/api/",
-  apiUrl : "https://api.intelligence-world.com/api/",
+  apiUrl: "https://api.intelligence-world.com/api/",
 };
