@@ -124,7 +124,7 @@ const Update = () => {
       }
     } catch (error) {
       console.log("error: ", error);
-      if (!error?.data?.success) toastError(error?.data?.message);
+      if (!error?.data?.success) toastError(error?.data?.code);
       setIsLoading(false);
     }
   };

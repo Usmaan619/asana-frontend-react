@@ -48,7 +48,11 @@ const TaskCard = ({ task, index, onClick }) => {
         >
           <div className="card task-card">
             <div className="card-body">
+              <div className="d-flex justify-content-between">
               <span className="card-text text-bold">Task No.{task?.ticketNo}</span>
+              <span className="card-text text-bold">{new Date(task?.createdAt).toLocaleDateString("en-IN")}</span>
+              
+              </div>
               <div className="d-flex">
                 <h6 className="card-title text-capitalize">{task.title}</h6>
               </div>

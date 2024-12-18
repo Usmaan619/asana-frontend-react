@@ -20,7 +20,7 @@ const LineChart = ({ ChartData, }) => {
 
 
   
-  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  const labels = ['Total Tasks', 'Completed Tasks',];
   const datasets = [
     {
       label: 'Total Task',
@@ -47,7 +47,7 @@ const LineChart = ({ ChartData, }) => {
       scales: {
         y: {
           min: 0, // Set the y-axis minimum
-          max:Math.round(ChartData?.totalTasks / 100) *  100, // Set the y-axis maximum
+          max:Math.round(ChartData?.totalTasks / 10) *  10, // Set the y-axis maximum
         }
       },
     //   plugins: {
