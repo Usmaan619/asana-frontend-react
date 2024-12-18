@@ -23,6 +23,19 @@ import {
 
 // Task Card Component
 const TaskCard = ({ task, index, onClick }) => {
+  const getPriorityColor = (priority) => {
+    switch (priority.toLowerCase()) {
+      case "high":
+        return "text-danger"; // red for high priority
+      case "medium":
+        return "text-warning"; // blue for medium priority
+      case "low":
+        return "text-success"; // green for low priority
+      default:
+        return "text-secondary"; // default color if no match
+    }
+  };
+  
   return (
     <Draggable draggableId={task._id} index={index}>
       {(provided) => (
@@ -35,19 +48,19 @@ const TaskCard = ({ task, index, onClick }) => {
         >
           <div className="card task-card">
             <div className="card-body">
-              <span className="card-text">Task No.{task?.ticketNo}</span>
+              <span className="card-text text-bold">Task No.{task?.ticketNo}</span>
               <div className="d-flex">
                 <h6 className="card-title text-capitalize">{task.title}</h6>
               </div>
               <div className="d-flex justify-content-between align-items-center text-capitalize">
-                <p className="card-text text-warning m-0">{task.priority}</p>
+                <p className={`card-text ${getPriorityColor(task.priority)} m-0`}>{task.priority}</p>
                 <p className="card-text text-info m-0">{task.status}</p>
               </div>
               <div className="d-flex justify-content-between align-items-center mt-2">
-                <span className="h5 text-danger text-uppercase">
+                <span className="h5 text-primary text-uppercase">
                   {getFirstAndLastLatterOfName(task.assignedTo?.name)}
                 </span>
-                <span className="h6 text-primary">
+                <span className="h6 text-danger">
                   {new Date(task.dueDate).toLocaleDateString("en-IN")}
                 </span>
               </div>
@@ -70,7 +83,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
         <div className="d-flex gap-4 overflow-auto">
           {/* Open Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-dark fw-bolder">Open</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">Breaking Barriers</h5>
             <div className="fiexd-h overflow-y-auto">
               <Droppable droppableId="open">
                 {(provided) => (
@@ -99,7 +112,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
           {/* In-Progress Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-dark fw-bolder">In-Progress</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">Climbing the Ladder</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="in-progress">
                 {(provided) => {
@@ -130,7 +143,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
 
           {/* Completed Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-dark fw-bolder">Completed</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">From To-Do to Done</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="completed">
                 {(provided) => (
@@ -160,7 +173,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
           {/* Done Tickets */}
           <div className="col-lg-3">
             <h5 className="text-uppercase text-dark fw-bolder">Pending</h5>
-            <div className=" fiexd-h overflow-y-auto">
+            <div className="fiexd-h overflow-y-auto">
               <Droppable droppableId="pending">
                 {(provided) => (
                   <div
@@ -187,7 +200,7 @@ const AsanaStyleBoard = ({ tasks, handleModal, onDragEnd }) => {
           </div>
           {/* Done Tickets */}
           <div className="col-lg-3">
-            <h5 className="text-uppercase text-dark fw-bolder">Testing</h5>
+            <h5 className="text-uppercase text-dark fw-bolder">Progress in Action</h5>
             <div className=" fiexd-h overflow-y-auto">
               <Droppable droppableId="testing">
                 {(provided) => (
@@ -427,57 +440,6 @@ const Task = () => {
     }
   }
 
-//   const CARDDATA = [
-//     {
-//       title: "Total Tasks",
-//       value: getAllTasksCount?.totalTasks,
-//       // percentage: "+55%",
-//       icon: "ni ni-money-coins",
-//       iconColor: "bg-gradient-primary",
-//       percentageColor: "text-success",
-//     },
-//     {
-//       title: "Open ",
-//       value: getAllTasksCount?.openTask,
-//       // percentage: "+3%",
-//       icon: "ni ni-world",
-//       iconColor: "bg-gradient-primary",
-//       percentageColor: "text-success",
-//     },
-//     {
-//       title: "In progress ",
-//       value: getAllTasksCount?.inCompeleteTask,
-//       // percentage: "+3%",
-//       icon: "ni ni-world",
-//       iconColor: "bg-gradient-primary",
-//       percentageColor: "text-success",
-//     },
-//     {
-//       title: "Completed ",
-//       value: getAllTasksCount?.compeletedTask,
-//       // percentage: "+3%",
-//       icon: "ni ni-world",
-//       iconColor: "bg-gradient-primary",
-//       percentageColor: "text-success",
-//     },
-//     {
-//       title: "Pending ",
-//       value: getAllTasksCount?.pandingTask,
-//       // percentage: "+3%",
-//       icon: "ni ni-world",
-//       iconColor: "bg-gradient-primary",
-//       percentageColor: "text-success",
-//     },
-//     {
-//       title: "Testing",
-//       value: getAllTasksCount?.testingTask,
-//       // percentage: "+3%",
-//       icon: "ni ni-world",
-//       iconColor: "bg-gradient-primary",
-//       percentageColor: "text-success",
-//     },
-//   ];
-
   // Toggle dropdown visibility
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
@@ -539,43 +501,6 @@ const Task = () => {
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar fetchTicket={fetchTicket} />
         <div className="container-fluid">
-          {/* <div className="row"> */}
-            {/* {CARDDATA?.map((card, index) => (
-              <div className="col-xl-2 col-sm-6 mb-xl-0 mb-4" key={index}>
-                <div className="card">
-                  <div className="card-body py-2 px-4">
-                    <div className="row">
-                      <div className="col-8">
-                        <div className="numbers text-center">
-                          <p className="text-sm mb-0 text-capitalize font-weight-bold">
-                            {card?.title}
-                          </p>
-                          <h5 className="font-weight-bolder mb-0">
-                            {card?.value || 0}
-                            <span
-                              className={`${card?.percentageColor} text-sm font-weight-bolder`}
-                            >
-                              {card?.percentage}
-                            </span>
-                          </h5>
-                        </div>
-                      </div>
-                      <div className="col-4 text-end">
-                        <div
-                          className={`icon icon-shape ${card?.iconColor} shadow text-center border-radius-md`}
-                        >
-                          <i
-                            className={`${card?.icon} text-lg opacity-10`}
-                            aria-hidden="true"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))} */}
-          {/* </div> */}
           <div className="mt-1 w-100">
             {/* filter modal */}
             <div className="w-100 d-flex justify-content-end">
@@ -599,10 +524,9 @@ const Task = () => {
                       onChange={handleSelectChangeAssignee}
                       value={selectedAssignee}
                     >
+                      <option value="">Select All</option>
                       {TaskData?.map((option, index) => (
                         <>
-                          <option value="">Select All</option>
-
                           <option key={index} value={option._id}>
                             {option.name}
                           </option>
@@ -678,7 +602,7 @@ const Task = () => {
             />
           </div>
           {/* Task Modal */}
-          <div className="row my-5">
+          <div className="row">
             <Modal
               size="lg"
               show={show}
@@ -704,7 +628,7 @@ const Task = () => {
                   </div>
                 </Modal.Title>
               </Modal.Header>
-              <Modal.Body>
+              <Modal.Body> 
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="form-group">
                     <label htmlFor="task_name">Task Name</label>
