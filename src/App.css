@@ -125,3 +125,12 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(193, 190, 190); 
 }
+
+.sidenav{
+  z-index: 9 !important;
+}
+.CiMenuBurger-icon {
+  top: 26px;
+  left: 22px;
+  z-index: 99;
+}

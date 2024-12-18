@@ -141,6 +141,21 @@ const Navbar = ({ fetchTicket }) => {
     setFile(event.target.files[0]);
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Function to toggle dropdown visibility
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
   return (
     <React.Fragment>
       {/* <!-- Navbar --> */}
@@ -158,7 +173,7 @@ const Navbar = ({ fetchTicket }) => {
             id="navbar"
           >
             <div className="ms-md-auto pe-md-3 d-flex align-items-center">
-              <div className="add-task w-100">
+              <div className={`${breadcrumb == "Task"? "" : "d-none"}`}>
                 <button
                   className="btn btn-primary m-0 w-auto"
                   onClick={() => handleOpenModal(true)}
@@ -351,19 +366,19 @@ const Navbar = ({ fetchTicket }) => {
 
               {/* all user */}
               <li className="nav-item d-flex align-items-center text-uppercase">
-                <AvatarGroup max={5} spacing="medium">
-                  {TaskData?.map((n, idx) => (
-                    <Avatar sx={{ bgcolor: "#a3dfdf" }} key={idx}>
-                      {getFirstAndLastLatterOfName(n?.name)
-                        ? getFirstAndLastLatterOfName(n?.name)
-                        : "NA"}
-                    </Avatar>
-                  ))}
-                </AvatarGroup>
-              </li>
+  <AvatarGroup max={5} spacing="medium">
+    {TaskData?.map((n, idx) => (
+      <Avatar sx={{ bgcolor: getRandomColor() }} key={idx}>
+        {getFirstAndLastLatterOfName(n?.name)
+          ? getFirstAndLastLatterOfName(n?.name)
+          : "NA"}
+      </Avatar>
+    ))}
+  </AvatarGroup>
+</li>
               {/* end all user */}
 
-              <li className="nav-item d-flex align-items-center text-uppercase">
+              {/* <li className="nav-item d-flex align-items-center text-uppercase">
                 <AvatarGroup max={1} spacing="medium">
                   <Avatar sx={{ bgcolor: "#330867" }}>
                     {getFirstAndLastLatterOfName(GET_CASHE("name"))
@@ -371,7 +386,25 @@ const Navbar = ({ fetchTicket }) => {
                       : "NA"}
                   </Avatar>
                 </AvatarGroup>
-              </li>
+              </li> */}
+              <li className="nav-item d-flex align-items-center text-uppercase">
+      <div className="dropdown">
+        <span
+          className="avatar bg-primary text-white rounded-circle"
+          style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          onClick={toggleDropdown}
+        >
+          {getFirstAndLastLatterOfName(GET_CASHE("name")) || "NA"}
+        </span>
+        
+        {/* Dropdown Menu */}
+        <div className={`dropdown-menu${isOpen ? ' show' : ''}`} aria-labelledby="dropdownMenuButton">
+          <a className="dropdown-item" href="#profile" onClick={toggleDropdown}>Profile</a>
+          <a className="dropdown-item" href="#settings" onClick={toggleDropdown}>Settings</a>
+          <a className="dropdown-item" href="#logout" onClick={toggleDropdown}>Logout</a>
+        </div>
+      </div>
+    </li>
             </ul>
           </div>
         </div>
