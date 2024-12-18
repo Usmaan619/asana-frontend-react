@@ -105,7 +105,12 @@ body {
  ::-webkit-scrollbar {
   width: 6px;
 }
-
+.text-orange{
+  color: orange;
+}
+.text-blue{
+  color: rgb(30, 30, 195);
+}
 /* Track */
 ::-webkit-scrollbar-track {
   background: #acebeb;
@@ -113,8 +118,7 @@ body {
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #30cfd0; 
-
+  background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%) !important;
 }
 
 /* Handle on hover */

@@ -65,7 +65,7 @@ const Notifications = () => {
   // const [currentPage, setCurrentPage] = useState(1);
   // const [dailyTask, setDailyTask] = useState([]);
   const [offset, setOffset] = useState(0);
-  const [limit] = useState(10);
+  const [limit] = useState(9);
   const [total, setTotal] = useState(0);
   // const itemsPerPage = 10;
   // Fetch notifications
