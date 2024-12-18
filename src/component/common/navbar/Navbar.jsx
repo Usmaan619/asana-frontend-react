@@ -117,6 +117,16 @@ const Navbar = ({ fetchTicket }) => {
 
         break;
 
+        case "/task":
+        setBreadcrumb("Task");
+
+        break;
+
+        case "/notification":
+          setBreadcrumb("Notifications");
+  
+          break;
+
       default:
         break;
     }

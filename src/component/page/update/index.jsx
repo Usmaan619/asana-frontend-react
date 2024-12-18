@@ -226,9 +226,9 @@ const Update = () => {
       <Sidebar NOTIFICATION={getAllTasksCount} />
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <Navbar />
-        <div className="container-fluid py-4">
+        <div className="container-fluid">
           <div className="row">
-            <div className="container-fluid py-4 ">
+            <div className="container-fluid">
               <div className="d-flex justify-content-between align-items-center">
                 <Button
                   variant="primary"
