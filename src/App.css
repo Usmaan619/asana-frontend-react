@@ -108,16 +108,16 @@ body {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #acebeb;
 }
  
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: transparent ; 
+  background: #30cfd0; 
 
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: transparent; 
+  background: rgb(193, 190, 190); 
 }
