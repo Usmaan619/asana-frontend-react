@@ -1,7 +1,7 @@
 import axios from "axios";
 import { environment } from "../environment/environment";
 import { GET_CASHE } from "../utils/helper";
-import { toastError, toastSuccess } from "../servers/toastr.service";
+// import { toastError, toastSuccess } from "../servers/toastr.service";
 
 const axiosInstance = axios.create({
   baseURL: environment?.apiUrl,
