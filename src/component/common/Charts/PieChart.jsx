@@ -34,8 +34,9 @@ const DoughnutChart = ({ ChartData }) => {
           ChartData?.pandingTask,
           ChartData?.testingTask,
         ],
+
         borderColor: "green",
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        backgroundColor: ["#ff0000db", "#bce6fd", "#8bc34a", "#ffcc00"],
         stack: "combined",
         type: "bar",
       },

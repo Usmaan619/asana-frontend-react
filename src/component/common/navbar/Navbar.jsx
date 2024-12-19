@@ -28,6 +28,8 @@ const Navbar = ({ fetchTicket }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState(null);
   const [description, setdescription] = useState();
+  const colors = ["#ff0000", "#0000ff", "#00ff00", "#ffa500", "#ffff00"];
+
 
   useEffect(() => {
     featchTicketData();
@@ -148,14 +150,7 @@ const Navbar = ({ fetchTicket }) => {
     setIsOpen(!isOpen);
   };
 
-  const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  };
+
   return (
     <React.Fragment>
       {/* <!-- Navbar --> */}
@@ -367,13 +362,13 @@ const Navbar = ({ fetchTicket }) => {
               {/* all user */}
               <li className="nav-item d-flex align-items-center text-uppercase">
   <AvatarGroup max={5} spacing="medium">
-    {TaskData?.map((n, idx) => (
-      <Avatar sx={{ bgcolor: getRandomColor() }} key={idx}>
-        {getFirstAndLastLatterOfName(n?.name)
-          ? getFirstAndLastLatterOfName(n?.name)
-          : "NA"}
-      </Avatar>
-    ))}
+  {TaskData?.map((n, idx) => (
+  <Avatar sx={{ bgcolor: colors[idx % colors.length] }} key={idx}>
+    {getFirstAndLastLatterOfName(n?.name)
+      ? getFirstAndLastLatterOfName(n?.name)
+      : "NA"}
+  </Avatar>
+))}
   </AvatarGroup>
 </li>
               {/* end all user */}
