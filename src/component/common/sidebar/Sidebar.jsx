@@ -62,6 +62,9 @@ const Sidebar = ({ NOTIFICATION }) => {
   };
 
   const handleLogout = () => {
+    setUserLogin(null);
+    localStorage.removeItem(CLEAR_CASHE);
+    navigate("/login");
   };
 
 

@@ -39,6 +39,13 @@ const LineChart = ({ ChartData, }) => {
     labels: labels,
     datasets: datasets,
   };
+  const getMaxValue = (totalTasks) => {
+    if (totalTasks === undefined || totalTasks === null) return 0;
+
+    const digits = totalTasks.toString().length; // Get the number of digits
+    return Math.pow(10, digits) * 1; // Calculate the max value
+  };
+
   const config = {
     type: 'line',
     data: data,
@@ -47,7 +54,7 @@ const LineChart = ({ ChartData, }) => {
       scales: {
         y: {
           min: 0, // Set the y-axis minimum
-          max:Math.round(ChartData?.totalTasks / 10) *  10, // Set the y-axis maximum
+          max: getMaxValue(ChartData?.totalTasks ) // Set the y-axis maximum
         }
       },
     //   plugins: {
@@ -57,6 +64,11 @@ const LineChart = ({ ChartData, }) => {
     //   }
     },
   };
+
+
+
+  
+
 
   return (
     <div>
