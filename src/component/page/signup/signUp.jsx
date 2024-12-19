@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+// import axios from "axios";
 import { signUpAPI } from "../../common/Api/api";
 import { Link, useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
@@ -110,7 +110,7 @@ const Signup = () => {
                           htmlFor="flexCheckDefault"
                         >
                           I agree to the{" "}
-                          <a href="#" className="text-dark font-weight-bolder">
+                          <a href="/" className="text-dark font-weight-bolder">
                             Terms and Conditions
                           </a>
                         </label>

@@ -33,7 +33,7 @@
   .notification-item {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
     padding: 1rem;
     background: #f9f9f9;
     border-radius: 8px;
@@ -71,15 +71,12 @@
   .pagination-controls {
     display: flex;
     justify-content: space-between;
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
   }
   
   .pagination-controls button {
-    padding: 0.5rem 1rem;
     background:  #30cfd0;
     color: white;
-    border: none;
-    border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s;
   }
@@ -90,6 +87,6 @@
   }
   
   .pagination-controls button:hover:not(:disabled) {
-    background: #330867;
+    background:  #82f7f7;
   }
   
