@@ -5,7 +5,7 @@ import Multiselect from "multiselect-react-dropdown"; // Ensure this package is 
 import { useForm } from "react-hook-form";
 import Sidebar from "../../common/sidebar/Sidebar";
 import Navbar from "../../common/navbar/Navbar";
-import { CARDDATA } from "../../../constant/constant";
+// import { CARDDATA } from "../../../constant/constant";
 import { TailSpin } from "react-loader-spinner";
 import {
   createTaskDailyUpdateAPI,
@@ -18,7 +18,7 @@ import {
 } from "../../common/Api/api";
 import moment from "moment";
 import { toastError, toastSuccess } from "../../../servers/toastr.service";
-import Notifications from "../notification/notification";
+// import Notifications from "../notification/notification";
 
 const Update = () => {
   const [show, setShow] = useState(false);
@@ -242,15 +242,15 @@ const Update = () => {
                 >
                   My Task
                 </Button>
-                <div className="d-flex gap-4 align-items-center">
-                  <div className="d-flex flex-column start-date-constainer">
+                <div className="d-flex gap-4 align-items-end">
+                  <div className="d-flex flex-column mb-3">
                     <label htmlFor="startDate" className="">
                       Start Date
                     </label>
                     <input
                       type="date"
                       id="startDate"
-                      className="form-control"
+                      className="form-control shadow"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
                     />
@@ -322,7 +322,7 @@ const Update = () => {
                                 </td>
 
                                 <td className="">
-                                  <p className="text-xs font-weight-bold mb-0 text-truncate w-75">
+                                  <p className="text-xs font-weight-bold mb-0 text-truncate table-width">
                                     {link?.about ? link?.about : "NA"}
                                   </p>
                                 </td>
@@ -332,7 +332,7 @@ const Update = () => {
                                     : "NA"}
                                 </td>
                                 <td className="align-middle">
-                                  <p className="text-xs font-weight-bold mb-0 text-truncate w-75">
+                                  <p className="text-xs font-weight-bold mb-0 text-truncate table-width">
                                     {link?.description
                                       ? link?.description
                                       : "NA"}
@@ -352,7 +352,7 @@ const Update = () => {
                                 <td>
                                   {/*  */}
                                   <div className="ms-auto">
-                                    <a
+                                    <button
                                       onClick={() => {
                                         onDeleteTaskUpdate(link);
                                       }}
@@ -360,8 +360,8 @@ const Update = () => {
                                     >
                                       <i className="far fa-trash-alt"></i>
                                       Delete
-                                    </a>
-                                    <a
+                                    </button>
+                                    <button
                                       onClick={() => {
                                         onEditTaskUpdate(link, "edit");
                                       }}
@@ -372,7 +372,7 @@ const Update = () => {
                                         aria-hidden="true"
                                       ></i>
                                       Edit
-                                    </a>
+                                    </button>
                                   </div>
                                 </td>
                               </tr>
@@ -385,12 +385,12 @@ const Update = () => {
                       <ul className="pagination justify-centent-center">
                         {pageNumbers?.map((number) => (
                           <li key={number} className="page-item mx-1">
-                            <a
+                            <button
                               onClick={() => paginate(number)}
                               className="page-link"
                             >
                               {number}
-                            </a>
+                            </button>
                           </li>
                         ))}
                       </ul>

@@ -18,7 +18,7 @@ import ReactQuill from "react-quill";
 import { quillFormats, quillModules } from "../../../constant/constant";
 import {
   getFirstAndLastLatterOfName,
-  NOTIFICATION,
+  // NOTIFICATION,
 } from "../../../utils/helper";
 
 // Task Card Component
@@ -39,15 +39,15 @@ const TaskCard = ({ task, index, onClick }) => {
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "open":
-        return "text-blue"; // red for high priority
+        return "text-blue"; 
       case "in-progress":
-        return "text-warning"; // blue for medium priority
+        return "text-warning"; 
       case "completed":
-        return "text-success"; // green for low priority
+        return "text-success"; 
       case "pending":
-        return "text-danger"; // green for low 
+        return "text-danger";  
       case "testing":
-        return "text-orange"; // green for low 
+        return "text-orange";  
       default:
         return "text-secondary"; // default color if no match
     }
