@@ -62,9 +62,10 @@ const Sidebar = ({ NOTIFICATION }) => {
   };
 
   const handleLogout = () => {
+    CLEAR_CASHE();
+    navigate("/");
     setUserLogin(null);
-    localStorage.removeItem(CLEAR_CASHE);
-    navigate("/login");
+
   };
 
 
@@ -75,8 +76,8 @@ const Sidebar = ({ NOTIFICATION }) => {
         onClick={handleToggleSidenav}
       >
         {isVisible ? (
-          <CiMenuBurger className="position-absolute CiMenuBurger-icon" />
-        ) : (<CiMenuBurger className="position-absolute CiMenuBurger-icon" />)}
+          <CiMenuBurger className="position-absolute CiMenuBurger-icon fs-4 mt-2" />
+        ) : (<CiMenuBurger className="position-absolute CiMenuBurger-icon fs-4" />)}
       </span>
 
       {isVisible && (

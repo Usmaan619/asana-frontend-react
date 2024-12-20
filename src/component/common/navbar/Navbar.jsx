@@ -41,7 +41,7 @@ const Navbar = ({ fetchTicket }) => {
     try {
       const res = await featchAllUser();
       if (res) setTaskData(res);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getTask = async () => await featctAllTicket();
@@ -107,7 +107,6 @@ const Navbar = ({ fetchTicket }) => {
   useEffect(() => {
     getRoutes();
   }, [breadcrumb]);
-
   const getRoutes = () => {
     switch (window?.location?.pathname) {
       case "/dashboard":
@@ -119,15 +118,15 @@ const Navbar = ({ fetchTicket }) => {
 
         break;
 
-        case "/task":
+      case "/task":
         setBreadcrumb("Task");
 
         break;
 
-        case "/notification":
-          setBreadcrumb("Notifications");
-  
-          break;
+      case "/notification":
+        setBreadcrumb("Notifications");
+
+        break;
 
       default:
         break;
@@ -150,7 +149,13 @@ const Navbar = ({ fetchTicket }) => {
     setIsOpen(!isOpen);
   };
 
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    CLEAR_CASHE();
+    navigate("/");
+    setUserLogin(null);
 
+  };
   return (
     <React.Fragment>
       {/* <!-- Navbar --> */}
@@ -161,14 +166,14 @@ const Navbar = ({ fetchTicket }) => {
       >
         <div className="container-fluid py-1 px-3">
           <nav aria-label="breadcrumb">
-            <h6 className="font-weight-bolder mb-0">{breadcrumb}</h6>
+            <h6 className="font-weight-bolder mb-0 ms-2">{breadcrumb}</h6>
           </nav>
           <div
             className="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4"
             id="navbar"
           >
             <div className="ms-md-auto pe-md-3 d-flex align-items-center">
-              <div className={`${breadcrumb == "Task"? "" : "d-none"}`}>
+              <div className={`${breadcrumb === "Task" ? "" : "d-none"}`}>
                 <button
                   className="btn btn-primary m-0 w-auto"
                   onClick={() => handleOpenModal(true)}
@@ -361,16 +366,16 @@ const Navbar = ({ fetchTicket }) => {
 
               {/* all user */}
               <li className="nav-item d-flex align-items-center text-uppercase">
-  <AvatarGroup max={5} spacing="medium">
-  {TaskData?.map((n, idx) => (
-  <Avatar sx={{ bgcolor: colors[idx % colors.length] }} key={idx}>
-    {getFirstAndLastLatterOfName(n?.name)
-      ? getFirstAndLastLatterOfName(n?.name)
-      : "NA"}
-  </Avatar>
-))}
-  </AvatarGroup>
-</li>
+                <AvatarGroup max={5} spacing="medium">
+                  {TaskData?.map((n, idx) => (
+                    <Avatar sx={{ bgcolor: colors[idx % colors.length] }} key={idx}>
+                      {getFirstAndLastLatterOfName(n?.name)
+                        ? getFirstAndLastLatterOfName(n?.name)
+                        : "NA"}
+                    </Avatar>
+                  ))}
+                </AvatarGroup>
+              </li>
               {/* end all user */}
 
               {/* <li className="nav-item d-flex align-items-center text-uppercase">
@@ -383,23 +388,31 @@ const Navbar = ({ fetchTicket }) => {
                 </AvatarGroup>
               </li> */}
               <li className="nav-item d-flex align-items-center text-uppercase">
-      <div className="dropdown">
-        <span
-          className="avatar bg-primary text-white rounded-circle"
-          style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-          onClick={toggleDropdown}
-        >
-          {getFirstAndLastLatterOfName(GET_CASHE("name")) || "NA"}
-        </span>
-        
-        {/* Dropdown Menu */}
-        <div className={`dropdown-menu${isOpen ? ' show' : ''}`} aria-labelledby="dropdownMenuButton">
-          <a className="dropdown-item" href="#profile" onClick={toggleDropdown}>Profile</a>
-          <a className="dropdown-item" href="#settings" onClick={toggleDropdown}>Settings</a>
-          <a className="dropdown-item" href="#logout" onClick={toggleDropdown}>Logout</a>
-        </div>
-      </div>
-    </li>
+                <div className="dropdown">
+                  <span
+                    className="avatar bg-primary text-white rounded-circle"
+                    style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                    onClick={toggleDropdown}
+                  >
+                    {getFirstAndLastLatterOfName(GET_CASHE("name")) || "NA"}
+                  </span>
+
+                  {/* Dropdown Menu */}
+                  <div className={`dropdown-menu d-flex flex-column align-items-center py-2 px-3${isOpen ? ' show' : ''}`} aria-labelledby="dropdownMenuButton">
+                    <span
+                      className="avatar bg-primary text-white rounded-circle"
+                      style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                    >
+                      {getFirstAndLastLatterOfName(GET_CASHE("name")) || "NA"}
+                    </span>
+                    <p className="text-dark text-center text-sm fw-bold mt-2">{GET_CASHE("name")}</p>
+                    <p className="text-dark text-xs fw-bold">{GET_CASHE("email")}</p>
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleLogout}>LogOut</button>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
@@ -409,15 +422,15 @@ const Navbar = ({ fetchTicket }) => {
   );
 };
 
-const AvatarGroupExample = () => {
-  return (
-    <AvatarGroup max={4}>
-      <Avatar sx={{ bgcolor: "#f48fb1" }}>NL</Avatar>
-      <Avatar src="https://via.placeholder.com/40" alt="User" />
-      <Avatar sx={{ bgcolor: "#90caf9" }}>Aa</Avatar>
-      <Avatar sx={{ bgcolor: "#ce93d8" }}>AW</Avatar>
-    </AvatarGroup>
-  );
-};
+// const AvatarGroupExample = () => {
+//   return (
+//     <AvatarGroup max={4}>
+//       <Avatar sx={{ bgcolor: "#f48fb1" }}>NL</Avatar>
+//       <Avatar src="https://via.placeholder.com/40" alt="User" />
+//       <Avatar sx={{ bgcolor: "#90caf9" }}>Aa</Avatar>
+//       <Avatar sx={{ bgcolor: "#ce93d8" }}>AW</Avatar>
+//     </AvatarGroup>
+//   );
+// };
 
 export default Navbar;

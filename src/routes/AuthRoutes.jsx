@@ -18,7 +18,7 @@ function AuthRoutes() {
     let getvalue = GET_CASHE("token") ?? null;
 
     setUserLogin(getvalue);
-  }, [UserLogin]);
+  });
 
   // useEffect(() => {
   //   const userId = localStorage.getItem("userId"); // Assuming userId is stored locally

@@ -2,6 +2,7 @@ import React from "react";
 import {
   Chart as ChartJS,
   BarElement,
+  BarController,
   LineElement,
   CategoryScale,
   LinearScale,
@@ -14,6 +15,7 @@ import { Chart } from "react-chartjs-2";
 // Register required Chart.js components
 ChartJS.register(
   BarElement,
+  BarController,
   LineElement,
   CategoryScale,
   LinearScale,
@@ -36,7 +38,7 @@ const DoughnutChart = ({ ChartData }) => {
         ],
 
         borderColor: "green",
-        backgroundColor: ["#ff0000db", "#bce6fd", "#8bc34a", "#ffcc00"],
+        backgroundColor: ["#ff000080", "#bce6fd80", "#8bc34a80", "#ffcc0080"],
         stack: "combined",
         type: "bar",
       },

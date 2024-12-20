@@ -91,10 +91,12 @@ const Login = () => {
       };
 
       const response = await loginAPI(payload);
+      console.log('response: ', response);
 
       if (response?.login) {
         SET_CASHE("token", response?.token);
         SET_CASHE("name", response?.name);
+        SET_CASHE("email", response?.email);
         setUserLogin(response?.token);
         toastSuccess(response?.message);
         navigate("/dashboard");
@@ -176,7 +178,9 @@ const Login = () => {
                     {/* login */}
                     {isLoginPassword && (
                       <>
-                        <form onSubmit={handleSubmit(onSubmit)} role="form">
+                        <form onSubmit={handleSubmit(onSubmit)}
+                        // role="form" 
+                        >
                           <label>Email</label>
                           <div className="mb-3">
                             <input
@@ -270,7 +274,7 @@ const Login = () => {
                     {isForgotPassword && (
                       <form
                         onSubmit={handleForgotSubmit(onForgotPasswordSubmit)}
-                        role="form"
+                        // role="form"
                       >
                         <label>Email</label>
                         <div className="mb-3">
@@ -322,7 +326,7 @@ const Login = () => {
                         onSubmit={handleResetPasswordSubmit(
                           onResetPasswordSubmit
                         )}
-                        role="form"
+                        // role="form"
                       >
                         <label>OTP</label>
                         <div className="mb-3">
