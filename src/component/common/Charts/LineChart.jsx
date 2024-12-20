@@ -2,6 +2,7 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
+  BarController,
   LineElement,
   LinearScale,
   PointElement,
@@ -12,7 +13,7 @@ import {
 } from 'chart.js';
 
 // Register the necessary components and scales
-ChartJS.register(LineElement, LinearScale, PointElement, CategoryScale, Tooltip, Legend, Title);
+ChartJS.register(LineElement,  BarController,  LinearScale, PointElement, CategoryScale, Tooltip, Legend, Title);
 
 const LineChart = ({ ChartData, }) => {
     console.log('ChartData: ', ChartData);

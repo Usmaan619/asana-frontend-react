@@ -92,32 +92,27 @@ body {
 .s {
   overflow-x: auto;
 }
-
-/* .card {
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
-} */
-/* Scrollbar  */
-
- /* width */
- ::-webkit-scrollbar {
-  width: 6px;
-}
 .text-orange{
   color: orange;
 }
 .text-blue{
   color: rgb(30, 30, 195);
 }
+
+/* Scrollbar  */
+
+ /* width */
+ ::-webkit-scrollbar {
+  width: 6px;
+}
 /* Track */
 ::-webkit-scrollbar-track {
   background: #acebeb;
 }
- 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%) !important;
 }
-
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(193, 190, 190); 
@@ -133,4 +128,17 @@ body {
 }
 .table-width{
   width: 150px;
+}
+
+.dropdown .dropdown-menu{
+  position: absolute;
+  top: 0;
+  left: -110px;
+  right: auto;
+  font-size: 22px;
+  color: #fff;
+  transition: top 0.35s ease;
+}
+.text-lightGreen{
+  color: #30cfd0;
 }

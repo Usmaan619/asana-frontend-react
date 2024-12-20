@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState, useEffect } from "react";
 import {
   getAllNotificationsAPI,
   updateAllNotificationsAPI,
@@ -153,12 +153,12 @@ const Notifications = () => {
                 <ul className="pagination justify-centent-center">
                   {pageNumbers?.map((number) => (
                     <li key={number} className="page-item mx-1">
-                      <a 
+                      <div
                         onClick={() => paginate(number)}
                         className="page-link"
                       >
                         {number}
-                      </a>
+                      </div>
                     </li>
                   ))}
                 </ul>
